@@ -1,0 +1,421 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "async-http-client",
+        "repositoryURL": "https://github.com/swift-server/async-http-client.git",
+        "state": {
+          "branch": null,
+          "revision": "037b70291941fe43de668066eb6fb802c5e181d2",
+          "version": "1.1.1"
+        }
+      },
+      {
+        "package": "async-kit",
+        "repositoryURL": "https://github.com/vapor/async-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "48a719dec79ea3cbbc71ca9b29f69df7cd5794cd",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "package": "Chalk",
+        "repositoryURL": "https://github.com/mxcl/Chalk.git",
+        "state": {
+          "branch": null,
+          "revision": "9aa9f348b86db3cf6702a3e43c081ecec80cf3c7",
+          "version": "0.4.0"
+        }
+      },
+      {
+        "package": "Commandant",
+        "repositoryURL": "https://github.com/Carthage/Commandant.git",
+        "state": {
+          "branch": null,
+          "revision": "2cd0210f897fe46c6ce42f52ccfa72b3bbb621a0",
+          "version": "0.16.0"
+        }
+      },
+      {
+        "package": "console-kit",
+        "repositoryURL": "https://github.com/vapor/console-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "7a97a5ea7fefe61cf2c943242113125b0f396a98",
+          "version": "4.1.0"
+        }
+      },
+      {
+        "package": "FileCheck",
+        "repositoryURL": "https://github.com/llvm-swift/FileCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "9ed91cc30a1a325d989fac117f3f3065a16b9f76",
+          "version": "0.2.3"
+        }
+      },
+      {
+        "package": "FineJSON",
+        "repositoryURL": "https://github.com/omochi/FineJSON.git",
+        "state": {
+          "branch": null,
+          "revision": "05101709243cb66d80c92e645210a3b80cf4e17f",
+          "version": "1.14.0"
+        }
+      },
+      {
+        "package": "fluent",
+        "repositoryURL": "https://github.com/vapor/fluent.git",
+        "state": {
+          "branch": null,
+          "revision": "3eafdfe53c7d945c87769ec443e8ea5528ab9e32",
+          "version": "4.0.0-rc.1"
+        }
+      },
+      {
+        "package": "fluent-kit",
+        "repositoryURL": "https://github.com/vapor/fluent-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "e49af984d97cca3d57a0238ea76bad511c6089bc",
+          "version": "1.0.0-rc.1.17"
+        }
+      },
+      {
+        "package": "fluent-postgres-driver",
+        "repositoryURL": "https://github.com/vapor/fluent-postgres-driver.git",
+        "state": {
+          "branch": null,
+          "revision": "a7b7e341fe998ac1a20eac21962af934146a5de1",
+          "version": "2.0.0-rc.1.1"
+        }
+      },
+      {
+        "package": "JSONAPI",
+        "repositoryURL": "https://github.com/mattpolzin/JSONAPI.git",
+        "state": {
+          "branch": null,
+          "revision": "6ab4237c97e27ab0b5e3e1fe34738fa031a8dab9",
+          "version": "3.0.0"
+        }
+      },
+      {
+        "package": "JSONAPI-OpenAPI",
+        "repositoryURL": "https://github.com/mattpolzin/JSONAPI-OpenAPI.git",
+        "state": {
+          "branch": "feature/gen-swift",
+          "revision": "3e9e0c1dc3a7130914779bb500cfe7f547cf86ad",
+          "version": null
+        }
+      },
+      {
+        "package": "jsonapi-openapi-test-server",
+        "repositoryURL": "git@github.com:mattpolzin/jsonapi-openapi-test-server.git",
+        "state": {
+          "branch": "master",
+          "revision": "acfd52fd3552a52d54095934d4f7fbea5809c331",
+          "version": null
+        }
+      },
+      {
+        "package": "JSONAPIViz",
+        "repositoryURL": "https://github.com/mattpolzin/JSONAPIViz.git",
+        "state": {
+          "branch": null,
+          "revision": "c11b79a029c74ed72f86857f0da4f1e2b113ded8",
+          "version": "0.0.2"
+        }
+      },
+      {
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
+        "state": {
+          "branch": null,
+          "revision": "7fd118ec8795888bcbbebc1a41f6984454c4cd6f",
+          "version": "8.0.7"
+        }
+      },
+      {
+        "package": "OpenAPIKit",
+        "repositoryURL": "https://github.com/mattpolzin/OpenAPIKit.git",
+        "state": {
+          "branch": null,
+          "revision": "ff8b447549499b80aed8b73b1e1a0f54f090991c",
+          "version": "0.28.0"
+        }
+      },
+      {
+        "package": "OpenAPIReflection",
+        "repositoryURL": "https://github.com/mattpolzin/OpenAPIReflection.git",
+        "state": {
+          "branch": null,
+          "revision": "952af87b1bdc0fab00001a8be682cd112aa22850",
+          "version": "0.0.4"
+        }
+      },
+      {
+        "package": "Poly",
+        "repositoryURL": "https://github.com/mattpolzin/Poly.git",
+        "state": {
+          "branch": null,
+          "revision": "9031b8497e025cbcfae196e59eecad5ba988e267",
+          "version": "2.4.0"
+        }
+      },
+      {
+        "package": "postgres-kit",
+        "repositoryURL": "https://github.com/vapor/postgres-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "8f6d4fa648c5aa1d6ecdefea4d7fe25f97e599d0",
+          "version": "2.0.0-rc.1.1"
+        }
+      },
+      {
+        "package": "postgres-nio",
+        "repositoryURL": "https://github.com/vapor/postgres-nio.git",
+        "state": {
+          "branch": null,
+          "revision": "a528171a580b56fc38fd505bdb7d5de73e68a69a",
+          "version": "1.0.0-rc.2"
+        }
+      },
+      {
+        "package": "Quick",
+        "repositoryURL": "https://github.com/Quick/Quick.git",
+        "state": {
+          "branch": null,
+          "revision": "33682c2f6230c60614861dfc61df267e11a1602f",
+          "version": "2.2.0"
+        }
+      },
+      {
+        "package": "Result",
+        "repositoryURL": "https://github.com/antitypical/Result.git",
+        "state": {
+          "branch": null,
+          "revision": "2ca499ba456795616fbc471561ff1d963e6ae160",
+          "version": "4.1.0"
+        }
+      },
+      {
+        "package": "ReSwift",
+        "repositoryURL": "git@github.com:ReSwift/ReSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "b92762b5aa85c5e94053d942fbd37124ee939e5b",
+          "version": "5.0.0"
+        }
+      },
+      {
+        "package": "RichJSONParser",
+        "repositoryURL": "https://github.com/omochi/RichJSONParser.git",
+        "state": {
+          "branch": null,
+          "revision": "263e2ecfe88d0500fa99e4cbc8c948529d335534",
+          "version": "3.0.0"
+        }
+      },
+      {
+        "package": "routing-kit",
+        "repositoryURL": "https://github.com/vapor/routing-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "35da702471cbcc308f58d38aa8fea971fa3fb166",
+          "version": "4.0.0"
+        }
+      },
+      {
+        "package": "Sampleable",
+        "repositoryURL": "https://github.com/mattpolzin/Sampleable.git",
+        "state": {
+          "branch": null,
+          "revision": "df44bf1a860481109dcf455e3c6daf0a0f1bc259",
+          "version": "2.1.0"
+        }
+      },
+      {
+        "package": "SourceKitten",
+        "repositoryURL": "https://github.com/jpsim/SourceKitten.git",
+        "state": {
+          "branch": null,
+          "revision": "cc1f16acc70630d27498e81078789f5fa55d7463",
+          "version": "0.26.0"
+        }
+      },
+      {
+        "package": "sql-kit",
+        "repositoryURL": "https://github.com/vapor/sql-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "64c2af0321cd6445982d6873d100cc62e16afcf7",
+          "version": "3.0.0-rc.1.2"
+        }
+      },
+      {
+        "package": "swift-backtrace",
+        "repositoryURL": "https://github.com/swift-server/swift-backtrace.git",
+        "state": {
+          "branch": null,
+          "revision": "f2fd8c4845a123419c348e0bc4b3839c414077d5",
+          "version": "1.2.0"
+        }
+      },
+      {
+        "package": "swift-crypto",
+        "repositoryURL": "https://github.com/apple/swift-crypto.git",
+        "state": {
+          "branch": null,
+          "revision": "d67ac68d09a95443303e9d6e37b34e7ba101d5f1",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log.git",
+        "state": {
+          "branch": null,
+          "revision": "74d7b91ceebc85daf387ebb206003f78813f71aa",
+          "version": "1.2.0"
+        }
+      },
+      {
+        "package": "swift-metrics",
+        "repositoryURL": "https://github.com/apple/swift-metrics.git",
+        "state": {
+          "branch": null,
+          "revision": "708b960b4605abb20bc55d65abf6bad607252200",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "swift-nio",
+        "repositoryURL": "https://github.com/apple/swift-nio.git",
+        "state": {
+          "branch": null,
+          "revision": "e876fb37410e0036b98b5361bb18e6854739572b",
+          "version": "2.16.0"
+        }
+      },
+      {
+        "package": "swift-nio-extras",
+        "repositoryURL": "https://github.com/apple/swift-nio-extras.git",
+        "state": {
+          "branch": null,
+          "revision": "b4dbfacff47fb8d0f9e0a422d8d37935a9f10570",
+          "version": "1.4.0"
+        }
+      },
+      {
+        "package": "swift-nio-http2",
+        "repositoryURL": "https://github.com/apple/swift-nio-http2.git",
+        "state": {
+          "branch": null,
+          "revision": "82eb3fa0974b838358ee46bc6c5381e5ae5de6b9",
+          "version": "1.11.0"
+        }
+      },
+      {
+        "package": "swift-nio-ssl",
+        "repositoryURL": "https://github.com/apple/swift-nio-ssl.git",
+        "state": {
+          "branch": null,
+          "revision": "ae213938e151964aa691f0e902462fbe06baeeb6",
+          "version": "2.7.1"
+        }
+      },
+      {
+        "package": "NonEmpty",
+        "repositoryURL": "https://github.com/pointfreeco/swift-nonempty.git",
+        "state": {
+          "branch": null,
+          "revision": "9ef8c4aea57b8da7fedd5303d29470ea2a00c08d",
+          "version": "0.2.2"
+        }
+      },
+      {
+        "package": "swift-tools-support-core",
+        "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
+        "state": {
+          "branch": null,
+          "revision": "693aba4c4c9dcc4767cc853a0dd38bf90ad8c258",
+          "version": "0.0.1"
+        }
+      },
+      {
+        "package": "SwiftCheck",
+        "repositoryURL": "https://github.com/typelift/SwiftCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "077c096c3ddfc38db223ac8e525ad16ffb987138",
+          "version": "0.12.0"
+        }
+      },
+      {
+        "package": "SWXMLHash",
+        "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
+        "state": {
+          "branch": null,
+          "revision": "a4931e5c3bafbedeb1601d3bb76bbe835c6d475a",
+          "version": "5.0.1"
+        }
+      },
+      {
+        "package": "vapor",
+        "repositoryURL": "https://github.com/vapor/vapor.git",
+        "state": {
+          "branch": null,
+          "revision": "ad2aeccfbdd1275c0a8817a8024f0b98d65e3880",
+          "version": "4.0.0-rc.3.12"
+        }
+      },
+      {
+        "package": "VaporOpenAPI",
+        "repositoryURL": "https://github.com/mattpolzin/VaporOpenAPI.git",
+        "state": {
+          "branch": null,
+          "revision": "8d247289d5dd7828844394b66e661c9a60560445",
+          "version": "0.0.5"
+        }
+      },
+      {
+        "package": "VaporTypedRoutes",
+        "repositoryURL": "https://github.com/mattpolzin/VaporTypedRoutes.git",
+        "state": {
+          "branch": null,
+          "revision": "050c5d73bbbd6aab33b6f71fcde372fad960473f",
+          "version": "0.3.0"
+        }
+      },
+      {
+        "package": "websocket-kit",
+        "repositoryURL": "git@github.com:vapor/websocket-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "f46778e3f1452cc80a0a6c422cdc52a5d0258795",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "Yams",
+        "repositoryURL": "https://github.com/jpsim/Yams.git",
+        "state": {
+          "branch": null,
+          "revision": "c947a306d2e80ecb2c0859047b35c73b8e1ca27f",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "ZIPFoundation",
+        "repositoryURL": "https://github.com/weichsel/ZIPFoundation/",
+        "state": {
+          "branch": null,
+          "revision": "ec32d62d412578542c0ffb7a6ce34d3e64b43b94",
+          "version": "0.9.11"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
