@@ -22,6 +22,10 @@
 		C9662432243E28E7005D08F4 /* APITestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9662431243E28E7005D08F4 /* APITestTests.swift */; };
 		C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75A2442520F005CAAF1 /* APIActions.swift */; };
 		C96EE75E2442535D005CAAF1 /* APIMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75D2442535D005CAAF1 /* APIMiddleware.swift */; };
+		C99F921C2442C22C000DD436 /* NavigationActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921B2442C22C000DD436 /* NavigationActions.swift */; };
+		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
+		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
+		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +56,10 @@
 		C966243C243E2922005D08F4 /* APITest.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APITest.entitlements; sourceTree = "<group>"; };
 		C96EE75A2442520F005CAAF1 /* APIActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIActions.swift; sourceTree = "<group>"; };
 		C96EE75D2442535D005CAAF1 /* APIMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIMiddleware.swift; sourceTree = "<group>"; };
+		C99F921B2442C22C000DD436 /* NavigationActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationActions.swift; sourceTree = "<group>"; };
+		C99F921E2442F851000DD436 /* TestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailView.swift; sourceTree = "<group>"; };
+		C99F92202443CE54000DD436 /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
+		C99F92222443D159000DD436 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,13 +114,13 @@
 		C9662419243E28E5005D08F4 /* APITest */ = {
 			isa = PBXGroup;
 			children = (
+				C99F921D2442F842000DD436 /* Views */,
 				C96EE75C2442534E005CAAF1 /* Middleware */,
 				C96EE75924425202005CAAF1 /* Actions */,
 				C95AA6BC243ED7DC00BA95E7 /* State */,
 				C966243C243E2922005D08F4 /* APITest.entitlements */,
 				C966241A243E28E5005D08F4 /* AppDelegate.swift */,
 				C966241C243E28E5005D08F4 /* SceneDelegate.swift */,
-				C966241E243E28E5005D08F4 /* ContentView.swift */,
 				C9662420243E28E7005D08F4 /* Assets.xcassets */,
 				C9662428243E28E7005D08F4 /* Info.plist */,
 				C9662422243E28E7005D08F4 /* Preview Content */,
@@ -142,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				C96EE75A2442520F005CAAF1 /* APIActions.swift */,
+				C99F921B2442C22C000DD436 /* NavigationActions.swift */,
 			);
 			path = Actions;
 			sourceTree = "<group>";
@@ -152,6 +161,17 @@
 				C96EE75D2442535D005CAAF1 /* APIMiddleware.swift */,
 			);
 			path = Middleware;
+			sourceTree = "<group>";
+		};
+		C99F921D2442F842000DD436 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C966241E243E28E5005D08F4 /* ContentView.swift */,
+				C99F921E2442F851000DD436 /* TestDetailView.swift */,
+				C99F92202443CE54000DD436 /* TestListView.swift */,
+				C99F92222443D159000DD436 /* ToolbarView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,6 +284,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C99F92212443CE54000DD436 /* TestListView.swift in Sources */,
 				C966241B243E28E5005D08F4 /* AppDelegate.swift in Sources */,
 				C96EE75E2442535D005CAAF1 /* APIMiddleware.swift in Sources */,
 				C95AA6C0243EDA1700BA95E7 /* EntityCache.swift in Sources */,
@@ -273,6 +294,9 @@
 				C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */,
 				C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */,
 				C966241F243E28E5005D08F4 /* ContentView.swift in Sources */,
+				C99F921C2442C22C000DD436 /* NavigationActions.swift in Sources */,
+				C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */,
+				C99F92232443D159000DD436 /* ToolbarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

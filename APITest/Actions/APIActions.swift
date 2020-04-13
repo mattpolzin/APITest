@@ -20,7 +20,7 @@ extension API {
     }
 
     enum GetTest: ReSwift.Action {
-        case request(id: API.APITestDescriptor.Id, includeMessages: Bool)
+        case request(id: API.APITestDescriptor.Id, includeSource: Bool, includeMessages: Bool)
     }
 
     enum GetAllTests: ReSwift.Action {
