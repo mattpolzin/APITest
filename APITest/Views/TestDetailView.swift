@@ -120,13 +120,16 @@ struct TestDetailView: View {
                 }
             }
             if state.populatedValues == nil {
-                Self.loaderCells
+                VStack {
+                    Text("") // Source: ... spacing
+                    Self.emptyStateCells
+                }
             }
             Spacer()
         }
     }
 
-    static let loaderCells: some View = List {
+    static let emptyStateCells: some View = List {
         MessageCellView.dummy.opacity(1.0)
         MessageCellView.dummy.opacity(0.5)
         MessageCellView.dummy.opacity(0.2)

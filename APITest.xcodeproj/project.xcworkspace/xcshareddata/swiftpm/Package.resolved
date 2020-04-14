@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {
           "branch": null,
-          "revision": "3eafdfe53c7d945c87769ec443e8ea5528ab9e32",
-          "version": "4.0.0-rc.1"
+          "revision": "4401a7ecceabc23052ed4255c2b1d68dc20e71fb",
+          "version": "4.0.0-rc.2"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/vapor/fluent-kit.git",
         "state": {
           "branch": null,
-          "revision": "e49af984d97cca3d57a0238ea76bad511c6089bc",
-          "version": "1.0.0-rc.1.17"
+          "revision": "4f3ec755ea8a011eeb056c34ac18c9ec826b402b",
+          "version": "1.0.0-rc.1.19"
         }
       },
       {
@@ -114,7 +114,7 @@
         "repositoryURL": "git@github.com:mattpolzin/jsonapi-openapi-test-server.git",
         "state": {
           "branch": "master",
-          "revision": "acfd52fd3552a52d54095934d4f7fbea5809c331",
+          "revision": "369ab07390bc1f80ecd0e17830354b7269249b73",
           "version": null
         }
       },
@@ -249,8 +249,8 @@
         "repositoryURL": "https://github.com/vapor/sql-kit.git",
         "state": {
           "branch": null,
-          "revision": "64c2af0321cd6445982d6873d100cc62e16afcf7",
-          "version": "3.0.0-rc.1.2"
+          "revision": "f777df2a355b41b382ddf912e21b07ca30b3d247",
+          "version": "3.0.0-rc.2"
         }
       },
       {
@@ -366,8 +366,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "ad2aeccfbdd1275c0a8817a8024f0b98d65e3880",
-          "version": "4.0.0-rc.3.12"
+          "revision": "089361cf633080028c2f15d58e0fd6e48c64f323",
+          "version": "4.0.1"
         }
       },
       {

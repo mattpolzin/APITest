@@ -49,7 +49,7 @@ struct TestListView: View {
             ForEach(tests.sorted(by: API.APITestDescriptor.createdAtOrdering), id: \.id) { test in
                 HStack {
                     Text(self.dateFormatter.string(from: test.createdAt))
-                        .frame(minWidth: 200, alignment: .leading)
+                        .frame(minWidth: 220, alignment: .leading)
                     Spacer()
                     Text(test.status.rawValue)
                         .padding(.init(top: 5, leading: 10, bottom: 5, trailing: 10))

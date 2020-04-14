@@ -23,12 +23,12 @@ struct ContentView: View {
                 buildingAndRunningTestCount: state.buildingAndRunningTests.count,
                 finishedTodayTestCount: state.testsFinishedToday.count
             )
-            Rectangle().fill(Color.gray).frame(height: 2)
+            Rectangle().fill(Color.secondary).frame(height: 2)
             HStack {
                 TestListView(
                     tests: Array(self.entities.tests.values),
                     selectedTestId: self.state.selectedTestId
-                ).frame(width: 310)
+                ).frame(width: 330)
                 TestDetailView(
                     forTestId: self.state.selectedTestId,
                     in: self.state.entities,

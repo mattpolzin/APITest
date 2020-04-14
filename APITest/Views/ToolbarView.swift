@@ -25,7 +25,7 @@ struct ToolbarView: View {
             }
             Spacer()
             Text("\(buildingAndRunningTestCount) build/running")
-            Rectangle().fill(LinearGradient(gradient: Gradient(colors: [Color.clear, Color.gray.opacity(0.5), Color.clear]), startPoint: .top, endPoint: .bottom))
+            Rectangle().fill(LinearGradient(gradient: Gradient(colors: [Color.clear, Color.secondary.opacity(0.5), Color.clear]), startPoint: .top, endPoint: .bottom))
                 .frame(idealWidth: 2, idealHeight: 44).fixedSize()
             Text("\(finishedTodayTestCount) finished today")
             Spacer().frame(maxWidth: .infinity)
