@@ -18,6 +18,11 @@ extension API.APITestDescriptor {
     public var select: SelectTest { .init(testId: self.id) }
 }
 
+public enum NewTest: ReSwift.Action {
+    case open
+    case dismiss
+}
+
 public struct Toggle: ReSwift.Action {
     let field: WritableKeyPath<AppState.Toggles, Bool>
 }

@@ -16,13 +16,10 @@ struct ToolbarView: View {
 
     var body: some View {
         HStack {
-            Button(action: { store.dispatch(API.StartTest.request) }) {
-                Text("New Test")
-                    .background(Color.clear)
-                    .padding(8)
-                    .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.accentColor, lineWidth: 2))
-                    .padding(10)
-            }
+            StandardButton(
+                action: { store.dispatch(NewTest.open) },
+                label: "New Test"
+            )
             Spacer()
             Text("\(buildingAndRunningTestCount) build/running")
             Rectangle().fill(LinearGradient(gradient: Gradient(colors: [Color.clear, Color.secondary.opacity(0.5), Color.clear]), startPoint: .top, endPoint: .bottom))

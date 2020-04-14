@@ -15,11 +15,16 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var selectedTestId: API.APITestDescriptor.Id?
 
+    var recentlyUsedSource: API.OpenAPISource.Id?
+
     var toggles: Toggles
+
+    var modal: Modal
 
     init() {
         entities = .init()
         toggles = .init(messages: .init())
+        modal = .none
     }
 }
 
@@ -56,12 +61,36 @@ extension AppState {
 }
 
 extension AppState {
+    enum Modal: Equatable {
+        case none
+        case newTest(NewTestModal)
+
+        var isNewTest: Bool {
+            guard case .newTest = self else {
+                return false
+            }
+            return true
+        }
+    }
+
+    struct NewTestModal: Equatable {
+
+    }
+}
+
+extension AppState {
     static func reducer(action: ReSwift.Action, state: AppState?) -> AppState {
         var state = state ?? AppState()
 
         switch action {
         case let .response(entities) as API.EntityUpdate:
             state.entities.merge(with: entities)
+            return state
+        case .open as NewTest:
+            state.modal = .newTest(.init())
+            return state
+        case .dismiss as NewTest:
+            state.modal = .none
             return state
         case let selectTest as SelectTest:
             state.selectedTestId = selectTest.testId

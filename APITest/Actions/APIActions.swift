@@ -16,7 +16,13 @@ extension API {
     }
 
     enum StartTest: ReSwift.Action {
-        case request
+        case request(RequestSource)
+
+        enum RequestSource: Equatable {
+            case `default`
+            case new(uri: String)
+            case existing(id: API.OpenAPISource.Id)
+        }
     }
 
     enum GetTest: ReSwift.Action {

@@ -133,7 +133,6 @@ struct TestDetailView: View {
         MessageCellView.dummy.opacity(1.0)
         MessageCellView.dummy.opacity(0.5)
         MessageCellView.dummy.opacity(0.2)
-        MessageCellView.dummy.opacity(0.05)
     }
 }
 
@@ -162,7 +161,7 @@ struct MessageCellView: View {
         HStack {
             Rectangle().fill(messageType.color)
                 .frame(width: 5)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text(message).font(.body).bold()
                 path.map { Text("→ \($0)").font(.body).italic() }
                 context.map { Text("→ \($0)").font(.body) }

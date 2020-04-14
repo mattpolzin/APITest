@@ -26,6 +26,8 @@
 		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
 		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
 		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
+		C9CD2C0C24454428001A3091 /* NewTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0B24454428001A3091 /* NewTestView.swift */; };
+		C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0E2445949A001A3091 /* StandardButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,8 @@
 		C99F921E2442F851000DD436 /* TestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailView.swift; sourceTree = "<group>"; };
 		C99F92202443CE54000DD436 /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
 		C99F92222443D159000DD436 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
+		C9CD2C0B24454428001A3091 /* NewTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestView.swift; sourceTree = "<group>"; };
+		C9CD2C0E2445949A001A3091 /* StandardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,12 +170,22 @@
 		C99F921D2442F842000DD436 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C9CD2C0D2445947F001A3091 /* Components */,
 				C966241E243E28E5005D08F4 /* ContentView.swift */,
 				C99F921E2442F851000DD436 /* TestDetailView.swift */,
 				C99F92202443CE54000DD436 /* TestListView.swift */,
 				C99F92222443D159000DD436 /* ToolbarView.swift */,
+				C9CD2C0B24454428001A3091 /* NewTestView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		C9CD2C0D2445947F001A3091 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C9CD2C0E2445949A001A3091 /* StandardButton.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -289,6 +303,8 @@
 				C96EE75E2442535D005CAAF1 /* APIMiddleware.swift in Sources */,
 				C95AA6C0243EDA1700BA95E7 /* EntityCache.swift in Sources */,
 				C95AA6BE243ED7F600BA95E7 /* AppState.swift in Sources */,
+				C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */,
+				C9CD2C0C24454428001A3091 /* NewTestView.swift in Sources */,
 				C966241D243E28E5005D08F4 /* SceneDelegate.swift in Sources */,
 				C900B21E243EA5C600D14F69 /* ObservableState.swift in Sources */,
 				C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */,
