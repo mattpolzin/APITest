@@ -39,23 +39,31 @@ struct ContentView: View {
                 Spacer()
             }.disabled(state.modal != .none)
 
+            // dim things for modal presentation
             Rectangle().fill(Color.black)
                 .opacity(state.modal == .none ? 0.0 : 0.75)
                 .animation(.easeInOut(duration: 0.05))
 
-            HStack {
-                Spacer().frame(maxWidth: .infinity)
-                VStack {
-                    Spacer().frame(maxHeight: .infinity)
-                    NewTestView(sources: entities.sources, selection: state.recentlyUsedSource)
-                        .opacity(state.modal.isNewTest ? 1.0 : 0.0)
-                        .animation(.easeInOut(duration: 0.05))
-                        .disabled(!state.modal.isNewTest)
-//                        .frame(width: 300, height: 400)
-                    Spacer().frame(maxHeight: .infinity)
-                }
-                Spacer().frame(maxWidth: .infinity)
+            // present any current modal (or none)
+            self.modals
+        }
+    }
+}
+
+extension ContentView {
+    var modals: some View {
+        HStack {
+            Spacer().frame(maxWidth: .infinity)
+            VStack {
+                Spacer().frame(maxHeight: .infinity)
+                NewTestModalView(
+                    sources: entities.sources,
+                    selection: state.recentlyUsedSource,
+                    isPresented: state.modal.isNewTest
+                )
+                Spacer().frame(maxHeight: .infinity)
             }
+            Spacer().frame(maxWidth: .infinity)
         }
     }
 }
