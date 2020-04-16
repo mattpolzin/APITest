@@ -227,6 +227,8 @@
 				C966242F243E28E7005D08F4 /* PBXTargetDependency */,
 			);
 			name = APITestTests;
+			packageProductDependencies = (
+			);
 			productName = APITestTests;
 			productReference = C966242D243E28E7005D08F4 /* APITestTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";

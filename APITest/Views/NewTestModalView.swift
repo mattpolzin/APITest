@@ -18,7 +18,7 @@ struct NewTestModalView: View {
     var sourceOptions: [RequestSource] {
         [.default]
             + sources.map { .existing($0.value) }
-            + [.new(uri: "")]
+//            + [.new(uri: "")]
     }
 
     init(sources apiSources: EntityCache.Cache<API.OpenAPISource>, selection: API.OpenAPISource.Id? = nil, isPresented: Bool) {

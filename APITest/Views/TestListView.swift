@@ -13,7 +13,7 @@ import JSONAPI
 
 extension API.APITestDescriptor {
     public static let createdAtOrdering: (Self, Self) -> Bool = { left, right in
-        return left.createdAt < right.createdAt
+        return left.createdAt > right.createdAt
     }
 }
 

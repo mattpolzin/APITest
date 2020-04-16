@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/vapor/fluent-kit.git",
         "state": {
           "branch": null,
-          "revision": "4f3ec755ea8a011eeb056c34ac18c9ec826b402b",
-          "version": "1.0.0-rc.1.19"
+          "revision": "6e1fd8560bdc401ba81438090997fd15abbc904b",
+          "version": "1.0.0-rc.1.20"
         }
       },
       {
@@ -366,8 +366,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "089361cf633080028c2f15d58e0fd6e48c64f323",
-          "version": "4.0.1"
+          "revision": "2698e2c3f0bbb915f96a2fd9863c4a19c051b416",
+          "version": "4.2.0"
         }
       },
       {
