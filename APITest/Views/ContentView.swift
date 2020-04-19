@@ -11,6 +11,28 @@ import ReSwift
 import APIModels
 import JSONAPI
 
+enum Device {
+    case iPhone
+    case iPad
+    case mac
+    case other
+
+    static var current: Self {
+        #if targetEnvironment(macCatalyst)
+        return .mac
+        #else
+        switch UIDevice.current.userInterfaceIdiom {
+        case .pad:
+            return .iPad
+        case .phone:
+            return .iPhone
+        default:
+            return .other
+        }
+        #endif
+    }
+}
+
 struct ContentView: View {
     @ObservedObject private var appState = ObservableState(store: store)
 
@@ -37,17 +59,8 @@ struct ContentView: View {
                 )
                 Rectangle().fill(Color.secondary).frame(height: 2)
                 ZStack {
-                    HStack {
-                        TestListView(
-                            tests: Array(self.entities.tests.values),
-                            selectedTestId: self.state.selectedTestId
-                        ).frame(width: 330)
-                        TestDetailView(
-                            forTestId: self.state.selectedTestId,
-                            in: self.state.entities,
-                            withFilters: state.toggles.messages
-                        ).frame(maxWidth: .infinity)
-                    }
+                    self.listAndDetailViews
+
                     // settings view if visible
                     self.settingsView
                 }
@@ -58,6 +71,36 @@ struct ContentView: View {
 
             // present any current Toast
             self.toastView
+        }
+    }
+
+    var listAndDetailViews: some View {
+        ZStack {
+            if Device.current == .iPhone {
+                NavigationView {
+                    TestListView(
+                        tests: Array(self.entities.tests.values),
+                        selectedTestId: self.state.selectedTestId
+                    ).frame(width: 330)
+                    TestDetailView(
+                        forTestId: self.state.selectedTestId,
+                        in: self.state.entities,
+                        withFilters: state.toggles.messages
+                    ).frame(maxWidth: .infinity)
+                }
+            } else {
+                HStack {
+                    TestListView(
+                        tests: Array(self.entities.tests.values),
+                        selectedTestId: self.state.selectedTestId
+                    ).frame(width: 330)
+                    TestDetailView(
+                        forTestId: self.state.selectedTestId,
+                        in: self.state.entities,
+                        withFilters: state.toggles.messages
+                    ).frame(maxWidth: .infinity)
+                }
+            }
         }
     }
 }

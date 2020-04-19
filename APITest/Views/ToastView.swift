@@ -39,7 +39,7 @@ struct ToastView: View, Identifiable {
                     )
                     Spacer()
                 }
-            }.edgesIgnoringSafeArea(.top)
+            }
             .offset(y: -3)
 
         }.id(id)
