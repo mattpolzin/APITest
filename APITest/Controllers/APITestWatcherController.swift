@@ -45,7 +45,7 @@ final class APITestWatcherController {
             websocket.onText(self.onText)
         }.whenFailure { error in
             print(error)
-            // TODO
+            store.dispatch(Toast.networkError(message: error.localizedDescription))
         }
     }
 
@@ -53,7 +53,7 @@ final class APITestWatcherController {
         websocket?.close()
             .whenFailure { error in
                 print(error)
-                // TODO
+                store.dispatch(Toast.networkError(message: error.localizedDescription))
         }
     }
 
@@ -64,6 +64,7 @@ final class APITestWatcherController {
             decoder.dateDecodingStrategy = .iso8601
             guard let document = try text.data(using: .utf8).map({ try decoder.decode(API.SingleAPITestDescriptorDocument.self, from: $0) }) else {
                 print("no document?")
+                store.dispatch(Toast.serverError(message: "Did not receive expected response body from server when listening for Test updates."))
                 return
             }
 
@@ -87,7 +88,7 @@ final class APITestWatcherController {
             store.dispatch(entities.asUpdate)
         } catch {
             print(error)
-            // TODO
+            store.dispatch(Toast.networkError(message: error.localizedDescription))
         }
     }
 }

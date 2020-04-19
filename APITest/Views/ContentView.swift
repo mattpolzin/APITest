@@ -55,6 +55,9 @@ struct ContentView: View {
 
             // present any current modal (or none)
             self.modalViews
+
+            // present any current Toast
+            self.toastView
         }
     }
 }
@@ -97,6 +100,14 @@ extension ContentView {
                 )
             }
         }.edgesIgnoringSafeArea(.all)
+    }
+
+    var toastView: some View {
+        ZStack {
+            state.toastQueue.first.map { toastContent in
+                ToastView(content: toastContent)
+            }
+        }
     }
 }
 

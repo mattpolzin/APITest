@@ -1,5 +1,5 @@
 //
-//  APIMiddleware.swift
+//  APIMiddlewareController.swift
 //  APITest
 //
 //  Created by Mathew Polzin on 4/11/20.
@@ -38,7 +38,7 @@ final class APIMiddlewareController {
 
                 next(action)
 
-                let state = getState()!
+                guard let state = getState() else { return }
 
                 switch action {
                 case let .request(source) as API.StartTest:
@@ -74,7 +74,7 @@ final class APIMiddlewareController {
                                 return EntityCache()
                         }
                     } catch {
-                        // TODO: better error handling
+                        store.dispatch(Toast.apiError(message: error.localizedDescription))
                         print("Failure to send request: \(error)")
                     }
 
@@ -87,7 +87,7 @@ final class APIMiddlewareController {
                             guard let primaryResources = response.body.primaryResource?.values,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from batch test descriptor response")
-                                    // TODO: better error handling
+                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources and includes from batch test descriptor response"))
                                     return EntityCache()
                             }
 
@@ -120,7 +120,7 @@ final class APIMiddlewareController {
                             guard let primaryResource = response.body.primaryResource?.value,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from single test descriptor response")
-                                    // TODO: better error handling
+                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources and includes from single test descriptor response"))
                                     return EntityCache()
                             }
 
@@ -146,7 +146,7 @@ final class APIMiddlewareController {
                         path: "/openapi_sources") { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
                             guard let primaryResources = response.body.primaryResource?.values else {
                                     print("failed to retrieve primary resources from batch openapi source response")
-                                    // TODO: better error handling
+                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources from batch openapi source response"))
                                     return EntityCache()
                             }
 
@@ -235,6 +235,7 @@ extension APIMiddlewareController {
                 receiveCompletion: { result in
                     switch result {
                     case .failure(let failure):
+                        store.dispatch(Toast.apiError(message: failure.localizedDescription))
                         print(String(describing: failure))
                     case .finished:
                         break
@@ -255,7 +256,7 @@ extension APIMiddlewareController {
 
                     guard let value = try? Self.decode(Response.self, from: response.data) else {
                             print("failed to decode JSON:API response")
-                            // TODO: better error handling
+                            store.dispatch(Toast.apiError(message: "failed to decode JSON:API response"))
                             return
                     }
 

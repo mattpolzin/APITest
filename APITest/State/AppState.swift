@@ -25,11 +25,17 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var settingsEditor: SettingsEditor?
 
+    var toastQueue: [Toast.Content]
+
     init() {
         entities = .init()
         host = URL(string: "http://localhost:8080")!
         toggles = .init(messages: .init())
         modal = .none
+        settingsEditor = nil
+        toastQueue = []
+        recentlyUsedSource = nil
+        selectedTestId = nil
     }
 }
 
@@ -109,6 +115,12 @@ extension AppState {
             } else {
                 state.settingsEditor = .init(host: state.host.absoluteString)
             }
+            return state
+        case .show(let content) as Toast:
+            state.toastQueue.append(content)
+            return state
+        case .hide(let content) as Toast:
+            state.toastQueue.removeAll { $0 == content }
             return state
         case .changeHost(let proposedURL) as Settings:
             state.settingsEditor?.host = proposedURL

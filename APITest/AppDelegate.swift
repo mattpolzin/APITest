@@ -13,7 +13,10 @@ import APIModels
 let store = ReSwift.Store<AppState>(
     reducer: AppState.reducer,
     state: AppState(),
-    middleware: [APIMiddlewareController().middleware]
+    middleware: [
+        APIMiddlewareController().middleware,
+        ToastMiddlewareController().middleware
+    ]
 )
 
 @UIApplicationMain

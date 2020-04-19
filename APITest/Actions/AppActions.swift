@@ -10,24 +10,65 @@ import Foundation
 import APIModels
 import ReSwift
 
-public struct SelectTest: ReSwift.Action {
+struct SelectTest: ReSwift.Action {
     let testId: API.APITestDescriptor.Id
 }
 
 extension API.APITestDescriptor {
-    public var select: SelectTest { .init(testId: self.id) }
+    var select: SelectTest { .init(testId: self.id) }
 }
 
-public enum NewTest: ReSwift.Action {
+enum NewTest: ReSwift.Action {
     case open
     case dismiss
 }
 
-public struct Toggle: ReSwift.Action {
+struct Toggle: ReSwift.Action {
     let field: WritableKeyPath<AppState.Toggles, Bool>
 }
 
-public enum Settings: ReSwift.Action {
+enum Settings: ReSwift.Action {
     case toggleOpen
     case changeHost(proposedURL: String)
+}
+
+enum Toast: ReSwift.Action {
+    case show(Content)
+    case hide(Content)
+
+    static func networkError(message: String) -> Self {
+        .show(.init(title: "Network Error", message: message, style: .error))
+    }
+
+    static func serverError(message: String) -> Self {
+        .show(.init(title: "Server Error", message: message, style: .error))
+    }
+
+    static func apiError(message: String) -> Self {
+        .show(.init(title: "API Error", message: message, style: .error))
+    }
+
+    struct Content: Equatable, Identifiable {
+        let id: Int
+        let title: String
+        let message: String
+        let style: Style
+
+        private static var idCounter: Int = 0
+
+        init(title: String, message: String, style: Style) {
+            self.id = Self.idCounter
+            Self.idCounter += 1
+
+            self.title = title
+            self.message = message
+            self.style = style
+        }
+
+        enum Style: Equatable {
+            case info
+            case warning
+            case error
+        }
+    }
 }
