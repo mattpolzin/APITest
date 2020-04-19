@@ -26,3 +26,8 @@ public enum NewTest: ReSwift.Action {
 public struct Toggle: ReSwift.Action {
     let field: WritableKeyPath<AppState.Toggles, Bool>
 }
+
+public enum Settings: ReSwift.Action {
+    case toggleOpen
+    case changeHost(proposedURL: String)
+}

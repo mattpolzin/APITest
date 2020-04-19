@@ -26,13 +26,7 @@ final class APIMiddlewareController {
         return encoder
     }()
 
-    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
-        return try decoder.decode(type, from: data)
-    }
-
-    static func encode<T: Encodable>(_ value: T) throws -> Data {
-        return try encoder.encode(value)
-    }
+    let testWatchController: APITestWatcherController = APITestWatcherController()
 
     var nextRequestId: Int = 0
     var requests: [Int: AnyCancellable] = [:]
@@ -40,8 +34,14 @@ final class APIMiddlewareController {
     func middleware(dispatch: @escaping DispatchFunction, getState: @escaping () -> AppState?) -> (@escaping DispatchFunction) -> DispatchFunction {
         return { next in
             return { action in
+                // this middleware passes the action on and then handles it after reduction.
+
+                next(action)
+
+                let state = getState()!
+
                 switch action {
-                case .request(let source) as API.StartTest:
+                case let .request(source) as API.StartTest:
 
                     let relationships: API.NewAPITestDescriptor.Description.Relationships
 
@@ -67,7 +67,8 @@ final class APIMiddlewareController {
                     do {
                         try self.jsonApiRequest(
                             .post,
-                            url: URL(string: "http://localhost:8080/api_tests")!,
+                            host: state.host,
+                            path: "/api_tests",
                             body: document) { (_: API.SingleAPITestDescriptorDocument) -> EntityCache in
 
                                 return EntityCache()
@@ -81,7 +82,8 @@ final class APIMiddlewareController {
 
                     self.jsonApiRequest(
                         .get,
-                        url: URL(string: "http://localhost:8080/api_tests")!) { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
+                        host: state.host,
+                        path: "/api_tests") { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
                             guard let primaryResources = response.body.primaryResource?.values,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from batch test descriptor response")
@@ -112,7 +114,8 @@ final class APIMiddlewareController {
 
                     self.jsonApiRequest(
                         .get,
-                        url: URL(string: "http://localhost:8080/api_tests/\(id.rawValue.uuidString)")!,
+                        host: state.host,
+                        path: "/api_tests/\(id.rawValue.uuidString)",
                         including: includes) { (response: API.SingleAPITestDescriptorDocument) -> EntityCache in
                             guard let primaryResource = response.body.primaryResource?.value,
                                 let includes = response.body.includes?.values else {
@@ -136,11 +139,37 @@ final class APIMiddlewareController {
                             return entities
                     }
 
+                case .request as API.GetAllSources:
+                    self.jsonApiRequest(
+                        .get,
+                        host: state.host,
+                        path: "/openapi_sources") { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
+                            guard let primaryResources = response.body.primaryResource?.values else {
+                                    print("failed to retrieve primary resources from batch openapi source response")
+                                    // TODO: better error handling
+                                    return EntityCache()
+                            }
+
+                            var entities = EntityCache()
+
+                            entities.add(primaryResources)
+
+                            return entities
+                    }
+
+                case .start as API.WatchTests:
+                    self.testWatchController.connectIfNeeded(to: state.host)
+
+                case .stop as API.WatchTests:
+                    self.testWatchController.disconnect()
+
+                case .toggleOpen as Settings where state.settingsEditor == nil:
+                    // this means the settings editor was just closed.
+                    self.testWatchController.connectIfNeeded(to: state.host)
+
                 default:
                     break
                 }
-
-                next(action)
             }
         }
     }
@@ -151,22 +180,46 @@ final class APIMiddlewareController {
         }
         requests.removeAll()
     }
-
 }
 
 extension APIMiddlewareController {
 
-    @discardableResult
-    func jsonApiRequest<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument>(_ verb: HttpVerb, url: URL, body: Request, including includes: [String] = [], parsingWith entities: @escaping (Response) -> EntityCache) throws -> AnyCancellable {
-        let bodyData = try Self.encode(body)
-        return jsonApiRequest(verb, url: url, bodyData: bodyData, including: includes, parsingWith: entities)
+    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        return try decoder.decode(type, from: data)
+    }
+
+    static func encode<T: Encodable>(_ value: T) throws -> Data {
+        return try encoder.encode(value)
     }
 
     @discardableResult
-    func jsonApiRequest<Response: CodableJSONAPIDocument>(_ verb: HttpVerb, url: URL, bodyData: Data? = nil, including includes: [String] = [], parsingWith entities: @escaping (Response) -> EntityCache) -> AnyCancellable {
-        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+    func jsonApiRequest<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument>(
+        _ verb: HttpVerb,
+        host: URL,
+        path: String,
+        body: Request,
+        including includes: [String] = [],
+        parsingWith entities: @escaping (Response) -> EntityCache
+    ) throws -> AnyCancellable {
+        let bodyData = try Self.encode(body)
+        return jsonApiRequest(verb, host: host, path: path, bodyData: bodyData, including: includes, parsingWith: entities)
+    }
 
-        urlComponents.queryItems = [.init(name: "include", value: includes.joined(separator: ","))]
+    @discardableResult
+    func jsonApiRequest<Response: CodableJSONAPIDocument>(
+        _ verb: HttpVerb,
+        host: URL,
+        path: String,
+        bodyData: Data? = nil,
+        including includes: [String] = [],
+        parsingWith entities: @escaping (Response) -> EntityCache
+    ) -> AnyCancellable {
+        var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
+
+        urlComponents.path = path
+        if includes.count > 0 {
+            urlComponents.queryItems = [.init(name: "include", value: includes.joined(separator: ","))]
+        }
 
         var request = URLRequest(url: urlComponents.url!)
         request.httpMethod = verb.rawValue

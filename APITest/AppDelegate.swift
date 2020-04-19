@@ -19,27 +19,24 @@ let store = ReSwift.Store<AppState>(
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    let testWatchController: APITestWatcherController = APITestWatcherController()
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        testWatchController.connect()
-
+        store.dispatch(API.WatchTests.start)
         store.dispatch(API.GetAllTests.request)
 
         return true
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        testWatchController.disconnect()
+        store.dispatch(API.WatchTests.stop)
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        testWatchController.connect()
+        store.dispatch(API.WatchTests.start)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        testWatchController.disconnect()
+        store.dispatch(API.WatchTests.stop)
     }
 
     // MARK: UISceneSession Lifecycle

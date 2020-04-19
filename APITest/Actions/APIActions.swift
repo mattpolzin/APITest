@@ -32,4 +32,13 @@ extension API {
     enum GetAllTests: ReSwift.Action {
         case request
     }
+
+    enum GetAllSources: ReSwift.Action {
+        case request
+    }
+
+    enum WatchTests: ReSwift.Action {
+        case start
+        case stop
+    }
 }

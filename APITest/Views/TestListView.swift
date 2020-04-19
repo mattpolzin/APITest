@@ -48,12 +48,14 @@ struct TestListView: View {
         List {
             ForEach(tests.sorted(by: API.APITestDescriptor.createdAtOrdering), id: \.id) { test in
                 HStack {
+                    // Test Creation Date/Time
                     Text(self.dateFormatter.string(from: test.createdAt))
                         .frame(minWidth: 220, alignment: .leading)
                     Spacer()
+                    // Test Status
                     Text(test.status.rawValue)
                         .padding(.init(top: 5, leading: 10, bottom: 5, trailing: 10))
-                        .frame(minWidth: 80, alignment: .center)
+                        .frame(minWidth: 90, alignment: .center)
                         .background(test.status.color)
                         .cornerRadius(10)
                 }.padding(.init(top: 5, leading: 10, bottom: 5, trailing: 10))

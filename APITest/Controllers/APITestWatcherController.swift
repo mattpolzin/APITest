@@ -11,8 +11,11 @@ import WebSocketKit
 import NIO
 import APIModels
 
+// TODO: reconnect on disconnect
+
 final class APITestWatcherController {
     var websocket: WebSocket?
+    var currentHost: URL?
 
     private let eventLoopGroup: EventLoopGroup
 
@@ -20,9 +23,23 @@ final class APITestWatcherController {
         eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     }
 
-    func connect() {
-        WebSocket.connect(to: "ws://localhost:8080/watch", on: eventLoopGroup) { [weak self] websocket in
+    func connectIfNeeded(to hostUrl: URL) {
+        guard hostUrl != currentHost || (websocket?.isClosed ?? true) else {
+            // if the host is the same and the websocket is non-nil and webscoket is not closed
+            // then we just return
+            return
+        }
+
+        connect(to: hostUrl)
+    }
+
+    func connect(to hostUrl: URL) {
+        var components = URLComponents(url: hostUrl, resolvingAgainstBaseURL: false)!
+        components.scheme = "ws"
+        components.path = "/watch"
+        WebSocket.connect(to: components.string!, on: eventLoopGroup) { [weak self] websocket in
             guard let self = self else  { return }
+            self.currentHost = hostUrl
             self.websocket = websocket
 
             websocket.onText(self.onText)

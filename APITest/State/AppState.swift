@@ -13,6 +13,8 @@ import APIModels
 struct AppState: Equatable, ReSwift.StateType {
     var entities: EntityCache
 
+    var host: URL
+
     var selectedTestId: API.APITestDescriptor.Id?
 
     var recentlyUsedSource: API.OpenAPISource.Id?
@@ -21,8 +23,11 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var modal: Modal
 
+    var settingsEditor: SettingsEditor?
+
     init() {
         entities = .init()
+        host = URL(string: "http://localhost:8080")!
         toggles = .init(messages: .init())
         modal = .none
     }
@@ -61,9 +66,16 @@ extension AppState {
 }
 
 extension AppState {
+    struct SettingsEditor: Equatable {
+        @Validated<URLStringValidator>
+        var host: String
+    }
+}
+
+extension AppState {
     enum Modal: Equatable {
         case none
-        case newTest(NewTestModal)
+        case newTest
 
         var isNewTest: Bool {
             guard case .newTest = self else {
@@ -71,10 +83,6 @@ extension AppState {
             }
             return true
         }
-    }
-
-    struct NewTestModal: Equatable {
-
     }
 }
 
@@ -87,10 +95,23 @@ extension AppState {
             state.entities.merge(with: entities)
             return state
         case .open as NewTest:
-            state.modal = .newTest(.init())
+            state.modal = .newTest
             return state
         case .dismiss as NewTest:
             state.modal = .none
+            return state
+        case .toggleOpen as Settings:
+            if let editor = state.settingsEditor {
+                if let host = URL(string: editor.host) {
+                    state.host = host
+                }
+                state.settingsEditor = nil
+            } else {
+                state.settingsEditor = .init(host: state.host.absoluteString)
+            }
+            return state
+        case .changeHost(let proposedURL) as Settings:
+            state.settingsEditor?.host = proposedURL
             return state
         case let selectTest as SelectTest:
             state.selectedTestId = selectTest.testId

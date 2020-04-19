@@ -22,12 +22,15 @@
 		C9662432243E28E7005D08F4 /* APITestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9662431243E28E7005D08F4 /* APITestTests.swift */; };
 		C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75A2442520F005CAAF1 /* APIActions.swift */; };
 		C96EE75E2442535D005CAAF1 /* APIMiddleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75D2442535D005CAAF1 /* APIMiddleware.swift */; };
-		C99F921C2442C22C000DD436 /* NavigationActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921B2442C22C000DD436 /* NavigationActions.swift */; };
+		C99F921C2442C22C000DD436 /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921B2442C22C000DD436 /* AppActions.swift */; };
 		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
 		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
 		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
 		C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0B24454428001A3091 /* NewTestModalView.swift */; };
 		C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0E2445949A001A3091 /* StandardButton.swift */; };
+		C9F6CB7224483D6500945FBF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6CB7124483D6500945FBF /* SettingsView.swift */; };
+		C9F6CB76244BF93E00945FBF /* Validated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6CB75244BF93E00945FBF /* Validated.swift */; };
+		C9F6CB78244BF97000945FBF /* URLStringValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6CB77244BF97000945FBF /* URLStringValidator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,12 +61,15 @@
 		C966243C243E2922005D08F4 /* APITest.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APITest.entitlements; sourceTree = "<group>"; };
 		C96EE75A2442520F005CAAF1 /* APIActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIActions.swift; sourceTree = "<group>"; };
 		C96EE75D2442535D005CAAF1 /* APIMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIMiddleware.swift; sourceTree = "<group>"; };
-		C99F921B2442C22C000DD436 /* NavigationActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationActions.swift; sourceTree = "<group>"; };
+		C99F921B2442C22C000DD436 /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
 		C99F921E2442F851000DD436 /* TestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailView.swift; sourceTree = "<group>"; };
 		C99F92202443CE54000DD436 /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
 		C99F92222443D159000DD436 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		C9CD2C0B24454428001A3091 /* NewTestModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestModalView.swift; sourceTree = "<group>"; };
 		C9CD2C0E2445949A001A3091 /* StandardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardButton.swift; sourceTree = "<group>"; };
+		C9F6CB7124483D6500945FBF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C9F6CB75244BF93E00945FBF /* Validated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validated.swift; sourceTree = "<group>"; };
+		C9F6CB77244BF97000945FBF /* URLStringValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLStringValidator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +124,8 @@
 		C9662419243E28E5005D08F4 /* APITest */ = {
 			isa = PBXGroup;
 			children = (
+				C9F6CB74244BF92A00945FBF /* Validators */,
+				C9F6CB73244BF91F00945FBF /* Controllers */,
 				C99F921D2442F842000DD436 /* Views */,
 				C96EE75C2442534E005CAAF1 /* Middleware */,
 				C96EE75924425202005CAAF1 /* Actions */,
@@ -128,7 +136,6 @@
 				C9662420243E28E7005D08F4 /* Assets.xcassets */,
 				C9662428243E28E7005D08F4 /* Info.plist */,
 				C9662422243E28E7005D08F4 /* Preview Content */,
-				C9409AE8244105B1008945FB /* APITestWatcherController.swift */,
 			);
 			path = APITest;
 			sourceTree = "<group>";
@@ -154,7 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				C96EE75A2442520F005CAAF1 /* APIActions.swift */,
-				C99F921B2442C22C000DD436 /* NavigationActions.swift */,
+				C99F921B2442C22C000DD436 /* AppActions.swift */,
 			);
 			path = Actions;
 			sourceTree = "<group>";
@@ -176,6 +183,7 @@
 				C99F92202443CE54000DD436 /* TestListView.swift */,
 				C99F92222443D159000DD436 /* ToolbarView.swift */,
 				C9CD2C0B24454428001A3091 /* NewTestModalView.swift */,
+				C9F6CB7124483D6500945FBF /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -186,6 +194,23 @@
 				C9CD2C0E2445949A001A3091 /* StandardButton.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		C9F6CB73244BF91F00945FBF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				C9409AE8244105B1008945FB /* APITestWatcherController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		C9F6CB74244BF92A00945FBF /* Validators */ = {
+			isa = PBXGroup;
+			children = (
+				C9F6CB75244BF93E00945FBF /* Validated.swift */,
+				C9F6CB77244BF97000945FBF /* URLStringValidator.swift */,
+			);
+			path = Validators;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,12 +332,15 @@
 				C95AA6BE243ED7F600BA95E7 /* AppState.swift in Sources */,
 				C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */,
 				C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */,
+				C9F6CB76244BF93E00945FBF /* Validated.swift in Sources */,
 				C966241D243E28E5005D08F4 /* SceneDelegate.swift in Sources */,
 				C900B21E243EA5C600D14F69 /* ObservableState.swift in Sources */,
+				C9F6CB7224483D6500945FBF /* SettingsView.swift in Sources */,
 				C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */,
 				C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */,
 				C966241F243E28E5005D08F4 /* ContentView.swift in Sources */,
-				C99F921C2442C22C000DD436 /* NavigationActions.swift in Sources */,
+				C99F921C2442C22C000DD436 /* AppActions.swift in Sources */,
+				C9F6CB78244BF97000945FBF /* URLStringValidator.swift in Sources */,
 				C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */,
 				C99F92232443D159000DD436 /* ToolbarView.swift in Sources */,
 			);
