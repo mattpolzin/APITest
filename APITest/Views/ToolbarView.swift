@@ -26,21 +26,32 @@ struct ToolbarView: View {
             },
                 label: "New Test"
             ).disabled(newTestButtonDisabled)
+
             Spacer()
-            Text("\(buildingAndRunningTestCount) build/running")
+
+            Text("\(buildingAndRunningTestCount) building/running")
 
             Self.divider
 
             Text("\(finishedTodayTestCount) finished today")
             Spacer().frame(maxWidth: .infinity)
 
-                Image("Settings")
-                    .renderingMode(.template)
-                    .resizable().rotationEffect(.degrees(settingsTrayOpen ? -90.0 : 0.0)).animation(.easeInOut(duration: 0.25))
-                    .foregroundColor(settingsButtonDisabled ? .gray : .accentColor)
-                    .padding(8).frame(width: 46, height: 46)
-                    .onTapGesture { store.dispatch(Settings.toggleOpen) }
-                    .disabled(settingsButtonDisabled)
+            Image("Settings")
+                .renderingMode(.template)
+                .resizable()
+                .rotationEffect(.degrees(settingsTrayOpen ? -90.0 : 0.0)).animation(.easeInOut(duration: 0.25))
+                .foregroundColor(settingsButtonDisabled ? .gray : .accentColor)
+                .padding(8).frame(width: 46, height: 46)
+                .onTapGesture {
+                    store.dispatch(Settings.toggleOpen)
+            }
+            .disabled(settingsButtonDisabled)
+
+            Spacer()
+
+            Button(action: { store.dispatch(Help.open) }, label: { Image("Help").resizable() })
+                .padding(8)
+                .frame(width: 46, height: 46)
         }
     }
 

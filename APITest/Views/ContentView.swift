@@ -40,38 +40,48 @@ struct ContentView: View {
     private var entities: EntityCache { state.entities }
 
     var contentViewDisabled: Bool {
-        state.modal != .none
+        state.takeover.modal != nil
     }
 
     var settingsEditorOpen: Bool {
-        state.settingsEditor != nil
+        state.takeover.settingsEditor != nil
+    }
+
+    var settingsButtonDisabled: Bool {
+        !(state.takeover.settingsEditor?.$host.isValid ?? true)
     }
 
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                ToolbarView(
-                    buildingAndRunningTestCount: state.buildingAndRunningTests.count,
-                    finishedTodayTestCount: state.testsFinishedToday.count,
-                    settingsTrayOpen: settingsEditorOpen,
-                    newTestButtonDisabled: settingsEditorOpen,
-                    settingsButtonDisabled: !(state.settingsEditor?.$host.isValid ?? true)
-                )
-                Rectangle().fill(Color.secondary).frame(height: 2)
-                ZStack {
-                    self.listAndDetailViews
+            if state.takeover.isHelp {
+                HelpView(host: state.host)
+                    .rotation3DEffect(Angle(degrees: -180), axis: (x: 1, y: 0, z: 0))
+            } else {
+                VStack(spacing: 0) {
+                    ToolbarView(
+                        buildingAndRunningTestCount: state.buildingAndRunningTests.count,
+                        finishedTodayTestCount: state.testsFinishedToday.count,
+                        settingsTrayOpen: settingsEditorOpen,
+                        newTestButtonDisabled: settingsEditorOpen,
+                        settingsButtonDisabled: settingsButtonDisabled
+                    )
+                    Rectangle().fill(Color.secondary).frame(height: 2)
+                    ZStack {
+                        self.listAndDetailViews
 
-                    // settings view if visible
-                    self.settingsView
-                }
-            }.disabled(contentViewDisabled)
+                        // settings view if visible
+                        self.settingsView
+                    }
+                }.disabled(contentViewDisabled)
 
-            // present any current modal (or none)
-            self.modalViews
+                // present any current modal (or none)
+                self.modalViews
 
-            // present any current Toast
-            self.toastView
-        }
+                // present any current Toast
+                self.toastView
+            }
+        }.rotation3DEffect(state.takeover.isHelp ? Angle(degrees: 180): Angle(degrees: 0), axis: (x: 1, y: 0, z: 0))
+            .animation(.default, value: state.takeover.isHelp)
     }
 
     var listAndDetailViews: some View {
@@ -120,7 +130,7 @@ extension ContentView {
                     NewTestModalView(
                         sources: entities.sources,
                         selection: state.recentlyUsedSource,
-                        isPresented: state.modal.isNewTest
+                        isPresented: state.takeover.modal?.isNewTest ?? false
                     )
                     Spacer().frame(maxHeight: .infinity)
                 }
@@ -133,13 +143,13 @@ extension ContentView {
         ZStack {
             // dim things for modal presentation
             Rectangle().fill(Color.black)
-                .opacity(state.settingsEditor != nil ? 0.75 : 0.0)
+                .opacity(state.takeover.settingsEditor != nil ? 0.75 : 0.0)
                 .animation(.easeInOut(duration: 0.05))
 
             HStack(spacing: 0) {
                 Spacer().frame(maxWidth: .infinity)
                 SettingsView(
-                    settingsEditorState: state.settingsEditor
+                    settingsEditorState: state.takeover.settingsEditor
                 )
             }
         }.edgesIgnoringSafeArea(.all)

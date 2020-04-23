@@ -32,6 +32,11 @@ enum Settings: ReSwift.Action {
     case changeHost(proposedURL: String)
 }
 
+enum Help: ReSwift.Action {
+    case open
+    case close
+}
+
 enum Toast: ReSwift.Action {
     case show(Content)
     case hide(Content)

@@ -42,6 +42,7 @@ final class APIMiddlewareController {
 
                 switch action {
                 case let .request(source) as API.StartTest:
+                    self.testWatchController.connectIfNeeded(to: state.host)
 
                     let relationships: API.NewAPITestDescriptor.Description.Relationships
 
@@ -74,7 +75,7 @@ final class APIMiddlewareController {
                                 return EntityCache()
                         }
                     } catch {
-                        store.dispatch(Toast.apiError(message: error.localizedDescription))
+                        store.dispatch(Toast.apiError(message: "Failed to start a new test run"))
                         print("Failure to send request: \(error)")
                     }
 
@@ -87,7 +88,7 @@ final class APIMiddlewareController {
                             guard let primaryResources = response.body.primaryResource?.values,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from batch test descriptor response")
-                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources and includes from batch test descriptor response"))
+                                    store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response"))
                                     return EntityCache()
                             }
 
@@ -120,7 +121,7 @@ final class APIMiddlewareController {
                             guard let primaryResource = response.body.primaryResource?.value,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from single test descriptor response")
-                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources and includes from single test descriptor response"))
+                                    store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from single test descriptor response"))
                                     return EntityCache()
                             }
 
@@ -146,7 +147,7 @@ final class APIMiddlewareController {
                         path: "/openapi_sources") { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
                             guard let primaryResources = response.body.primaryResource?.values else {
                                     print("failed to retrieve primary resources from batch openapi source response")
-                                    store.dispatch(Toast.apiError(message: "failed to retrieve primary resources from batch openapi source response"))
+                                    store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response"))
                                     return EntityCache()
                             }
 
@@ -163,9 +164,10 @@ final class APIMiddlewareController {
                 case .stop as API.WatchTests:
                     self.testWatchController.disconnect()
 
-                case .toggleOpen as Settings where state.settingsEditor == nil:
+                case .toggleOpen as Settings where state.takeover.settingsEditor == nil:
                     // this means the settings editor was just closed.
                     self.testWatchController.connectIfNeeded(to: state.host)
+                    store.dispatch(API.GetAllTests.request)
 
                 default:
                     break
@@ -256,7 +258,7 @@ extension APIMiddlewareController {
 
                     guard let value = try? Self.decode(Response.self, from: response.data) else {
                             print("failed to decode JSON:API response")
-                            store.dispatch(Toast.apiError(message: "failed to decode JSON:API response"))
+                            store.dispatch(Toast.apiError(message: "Failed to decode JSON:API response"))
                             return
                     }
 

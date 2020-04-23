@@ -30,6 +30,7 @@
 		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
 		C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0B24454428001A3091 /* NewTestModalView.swift */; };
 		C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0E2445949A001A3091 /* StandardButton.swift */; };
+		C9D8C42424517CEE000EEC13 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D8C42324517CEE000EEC13 /* HelpView.swift */; };
 		C9E06E4524511ABD00101C04 /* Poly in Frameworks */ = {isa = PBXBuildFile; productRef = C9E06E4424511ABD00101C04 /* Poly */; };
 		C9F6CB7224483D6500945FBF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6CB7124483D6500945FBF /* SettingsView.swift */; };
 		C9F6CB76244BF93E00945FBF /* Validated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6CB75244BF93E00945FBF /* Validated.swift */; };
@@ -74,6 +75,7 @@
 		C99F92222443D159000DD436 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		C9CD2C0B24454428001A3091 /* NewTestModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestModalView.swift; sourceTree = "<group>"; };
 		C9CD2C0E2445949A001A3091 /* StandardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardButton.swift; sourceTree = "<group>"; };
+		C9D8C42324517CEE000EEC13 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		C9F6CB7124483D6500945FBF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C9F6CB75244BF93E00945FBF /* Validated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validated.swift; sourceTree = "<group>"; };
 		C9F6CB77244BF97000945FBF /* URLStringValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLStringValidator.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				C9CD2C0B24454428001A3091 /* NewTestModalView.swift */,
 				C9F6CB7124483D6500945FBF /* SettingsView.swift */,
 				C9F6CB79244C203900945FBF /* ToastView.swift */,
+				C9D8C42324517CEE000EEC13 /* HelpView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -355,6 +358,7 @@
 				C96EE75E2442535D005CAAF1 /* APIMiddlewareController.swift in Sources */,
 				C95AA6C0243EDA1700BA95E7 /* EntityCache.swift in Sources */,
 				C95AA6BE243ED7F600BA95E7 /* AppState.swift in Sources */,
+				C9D8C42424517CEE000EEC13 /* HelpView.swift in Sources */,
 				C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */,
 				C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */,
 				C9F6CB76244BF93E00945FBF /* Validated.swift in Sources */,

@@ -46,7 +46,7 @@ final class APITestWatcherController {
             websocket.onText(self.onText)
         }.whenFailure { error in
             print(error)
-            store.dispatch(Toast.networkError(message: error.localizedDescription))
+            store.dispatch(Toast.networkError(message: "Failed to start watching tests"))
         }
     }
 
@@ -54,7 +54,7 @@ final class APITestWatcherController {
         websocket?.close()
             .whenFailure { error in
                 print(error)
-                store.dispatch(Toast.networkError(message: error.localizedDescription))
+                store.dispatch(Toast.networkError(message: "Test watching killed due to error"))
         }
     }
 

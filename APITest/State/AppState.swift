@@ -21,9 +21,7 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var toggles: Toggles
 
-    var modal: Modal
-
-    var settingsEditor: SettingsEditor?
+    var takeover: Takeover
 
     var toastQueue: [Toast.Content]
 
@@ -31,8 +29,7 @@ struct AppState: Equatable, ReSwift.StateType {
         entities = .init()
         host = Config.host
         toggles = .init(messages: .init())
-        modal = .none
-        settingsEditor = nil
+        takeover = .none
         toastQueue = []
         recentlyUsedSource = nil
         selectedTestId = nil
@@ -72,15 +69,48 @@ extension AppState {
 }
 
 extension AppState {
+    enum Takeover: Equatable {
+        case modal(Modal)
+        case settings(SettingsEditor)
+        case help
+        case none
+
+        var settingsEditor: SettingsEditor? {
+            guard case let .settings(editor) = self else {
+                return nil
+            }
+            return editor
+        }
+
+        var modal: Modal? {
+            guard case let .modal(modal) = self else {
+                return nil
+            }
+            return modal
+        }
+
+        var isHelp: Bool {
+            guard case .help = self else {
+                return false
+            }
+            return true
+        }
+    }
+}
+
+extension AppState {
     struct SettingsEditor: Equatable {
         @Validated<URLStringValidator>
         var host: String
+
+        func with(host: String) -> Self {
+            return .init(host: host)
+        }
     }
 }
 
 extension AppState {
     enum Modal: Equatable {
-        case none
         case newTest
 
         var isNewTest: Bool {
@@ -101,20 +131,26 @@ extension AppState {
             state.entities.merge(with: entities)
             return state
         case .open as NewTest:
-            state.modal = .newTest
+            state.takeover = .modal(.newTest)
             return state
         case .dismiss as NewTest:
-            state.modal = .none
+            state.takeover = .none
             return state
         case .toggleOpen as Settings:
-            if let editor = state.settingsEditor {
+            if let editor = state.takeover.settingsEditor {
                 if let host = URL(string: editor.host) {
                     state.host = host
                 }
-                state.settingsEditor = nil
+                state.takeover = .none
             } else {
-                state.settingsEditor = .init(host: state.host.absoluteString)
+                state.takeover = .settings(.init(host: state.host.absoluteString))
             }
+            return state
+        case .open as Help:
+            state.takeover = .help
+            return state
+        case .close as Help:
+            state.takeover = .none
             return state
         case .show(let content) as Toast:
             state.toastQueue.append(content)
@@ -123,7 +159,9 @@ extension AppState {
             state.toastQueue.removeAll { $0 == content }
             return state
         case .changeHost(let proposedURL) as Settings:
-            state.settingsEditor?.host = proposedURL
+            if case let .settings(editor) = state.takeover {
+                state.takeover = .settings(editor.with(host: proposedURL))
+            }
             return state
         case let selectTest as SelectTest:
             state.selectedTestId = selectTest.testId
