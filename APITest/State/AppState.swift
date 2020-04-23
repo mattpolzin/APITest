@@ -29,7 +29,7 @@ struct AppState: Equatable, ReSwift.StateType {
 
     init() {
         entities = .init()
-        host = URL(string: "http://localhost:8080")!
+        host = Config.host
         toggles = .init(messages: .init())
         modal = .none
         settingsEditor = nil
