@@ -12,11 +12,36 @@ import NIO
 import APIModels
 import Poly
 
-// TODO: reconnect on disconnect
+extension APITestWatcherController {
+    enum State {
+        case disconnected
+        case reconnecting(host: URL)
+        case connected(host: URL, websocket: WebSocket)
+
+        var webscoket: WebSocket? {
+            guard case .connected(host: _, websocket: let websocket) = self else {
+                return nil
+            }
+            return websocket
+        }
+
+        var host: URL? {
+            switch self {
+            case .reconnecting(host: let host),
+                 .connected(host: let host, websocket: _):
+                return host
+            case .disconnected:
+                return nil
+            }
+        }
+    }
+}
 
 final class APITestWatcherController {
-    var websocket: WebSocket?
-    var currentHost: URL?
+    private(set) var state: State = .disconnected
+
+    var websocket: WebSocket? { state.webscoket }
+    var currentHost: URL? { state.host }
 
     private let eventLoopGroup: EventLoopGroup
 
@@ -40,10 +65,10 @@ final class APITestWatcherController {
         components.path = "/watch"
         WebSocket.connect(to: components.string!, on: eventLoopGroup) { [weak self] websocket in
             guard let self = self else  { return }
-            self.currentHost = hostUrl
-            self.websocket = websocket
+            self.state = .connected(host: hostUrl, websocket: websocket)
 
             websocket.onText(self.onText)
+            websocket.onClose.whenComplete(self.onClose(result:))
         }.whenFailure { error in
             print(error)
             store.dispatch(Toast.networkError(message: "Failed to start watching tests"))
@@ -51,14 +76,20 @@ final class APITestWatcherController {
     }
 
     func disconnect() {
-        websocket?.close()
-            .whenFailure { error in
-                print(error)
-                store.dispatch(Toast.networkError(message: "Test watching killed due to error"))
-        }
+        // we are already watching for close given a successful connection in `connect()`.
+        let _ = websocket?.close()
     }
 
     private typealias SingleDescriptorOrMessage = Either<API.SingleAPITestMessageDocument, API.SingleAPITestDescriptorDocument>
+
+    private func onClose(result: Result<Void, Error>) {
+        if case .failure(let error) = result {
+            // TODO: attempt reconnect on a timed interval
+            print(error)
+            store.dispatch(Toast.networkError(message: "Test watching killed due to error"))
+        }
+        self.state = .disconnected
+    }
 
     private func onText(websocket: WebSocket, text: String) {
         print("received websocket update")
