@@ -25,8 +25,22 @@ extension API {
         }
     }
 
-    enum GetTest: ReSwift.Action {
-        case request(id: API.APITestDescriptor.Id, includeSource: Bool, includeMessages: Bool)
+    struct GetTest: ReSwift.Action {
+        let id: API.APITestDescriptor.Id
+        let requestType: RequestType
+
+        enum RequestType {
+            case descriptor(includeMessages: Bool, includeSource: Bool)
+            case rawLogs
+        }
+
+        static func requestDescriptor(id: API.APITestDescriptor.Id, includeMessages: Bool, includeSource: Bool) -> Self {
+            .init(id: id, requestType: .descriptor(includeMessages: includeMessages, includeSource: includeSource))
+        }
+
+        static func requestRawLogs(id: API.APITestDescriptor.Id) -> Self {
+            .init(id: id, requestType: .rawLogs)
+        }
     }
 
     enum GetAllTests: ReSwift.Action {

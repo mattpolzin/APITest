@@ -95,7 +95,8 @@ struct ContentView: View {
                     TestDetailView(
                         forTestId: self.state.selectedTestId,
                         in: self.state.entities,
-                        withFilters: state.toggles.messages
+                        withFilters: state.toggles.messages,
+                        viewing: state.detailsViewing
                     ).frame(maxWidth: .infinity)
                 }
             } else {
@@ -107,7 +108,8 @@ struct ContentView: View {
                     TestDetailView(
                         forTestId: self.state.selectedTestId,
                         in: self.state.entities,
-                        withFilters: state.toggles.messages
+                        withFilters: state.toggles.messages,
+                        viewing: state.detailsViewing
                     ).frame(maxWidth: .infinity)
                 }
             }

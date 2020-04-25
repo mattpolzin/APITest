@@ -107,16 +107,18 @@ final class APIMiddlewareController {
                             return entities
                     }
 
-                case let .request(id, includeSource, includeMessages) as API.GetTest:
-                    var includes = [String]()
+                case let request as API.GetTest:
+                    switch request.requestType {
+                    case .descriptor(let includeMessages, let includeSource):
+                        var includes = [String]()
 
-                    if includeSource { includes.append("openAPISource") }
-                    if includeMessages { includes.append("messages") }
+                        if includeSource { includes.append("openAPISource") }
+                        if includeMessages { includes.append("messages") }
 
-                    self.jsonApiRequest(
-                        .get,
-                        host: state.host,
-                        path: "/api_tests/\(id.rawValue.uuidString)",
+                        self.jsonApiRequest(
+                            .get,
+                            host: state.host,
+                            path: "/api_tests/\(request.id.rawValue.uuidString)",
                         including: includes) { (response: API.SingleAPITestDescriptorDocument) -> EntityCache in
                             guard let primaryResource = response.body.primaryResource?.value,
                                 let includes = response.body.includes?.values else {
@@ -138,6 +140,19 @@ final class APIMiddlewareController {
                             }
 
                             return entities
+                        }
+
+                    case .rawLogs:
+                        self.plaintextRequest(
+                            .get,
+                            host: state.host,
+                            path: "/api_tests/\(request.id.rawValue.uuidString)/logs") { logs in
+                                var entities = EntityCache()
+
+                                entities.testLogs[request.id] = logs
+
+                                return entities
+                        }
                     }
 
                 case .request as API.GetAllSources:
@@ -192,6 +207,63 @@ extension APIMiddlewareController {
 
     static func encode<T: Encodable>(_ value: T) throws -> Data {
         return try encoder.encode(value)
+    }
+
+    @discardableResult
+    func plaintextRequest(
+        _ verb: HttpVerb,
+        host: URL,
+        path: String,
+        parsingWith entities: @escaping (String) -> EntityCache
+    ) -> AnyCancellable {
+        var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
+
+        urlComponents.path = path
+
+        var request = URLRequest(url: urlComponents.url!)
+        request.httpMethod = verb.rawValue
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+        let requestId = self.nextRequestId
+        self.nextRequestId += 1
+
+        let inFlightRequest = URLSession.shared
+            .dataTaskPublisher(for: request)
+            .sink(
+                receiveCompletion: { result in
+                    switch result {
+                    case .failure(let failure):
+                        store.dispatch(Toast.apiError(message: failure.localizedDescription))
+                        print(String(describing: failure))
+                    case .finished:
+                        break
+                    }
+                    self.requests.removeValue(forKey: requestId)
+            },
+                receiveValue: { response in
+                    guard let status = (response.response as? HTTPURLResponse)?.statusCode else {
+                        print("something went really wrong with request. no status code. response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                        return
+                    }
+
+                    guard status >= 200 && status < 300 else {
+                        print("request failed with status code: \(status)")
+                        print("response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                        return
+                    }
+
+                    guard let value = String(data: response.data, encoding: .utf8) else {
+                        print("failed to decode JSON:API response")
+                        store.dispatch(Toast.apiError(message: "Failed to decode plaintext response"))
+                        return
+                    }
+
+                    store.dispatch(entities(value).asUpdate)
+            })
+
+        self.requests[requestId] = inFlightRequest
+
+        return inFlightRequest
     }
 
     @discardableResult

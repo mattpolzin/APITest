@@ -28,6 +28,11 @@
 		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
 		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
 		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
+		C9AB41962454DC2300B50FA4 /* MessageCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41952454DC2300B50FA4 /* MessageCellView.swift */; };
+		C9AB41982454DD2A00B50FA4 /* MessageTypeCountCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41972454DD2A00B50FA4 /* MessageTypeCountCircleView.swift */; };
+		C9AB419A2454DDE400B50FA4 /* MessageTypeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */; };
+		C9AB419C2454DE3600B50FA4 /* TestDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB419B2454DE3600B50FA4 /* TestDetailsHeaderView.swift */; };
+		C9AB419E2454DF5900B50FA4 /* RawTestLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB419D2454DF5900B50FA4 /* RawTestLogView.swift */; };
 		C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0B24454428001A3091 /* NewTestModalView.swift */; };
 		C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0E2445949A001A3091 /* StandardButton.swift */; };
 		C9D8C42424517CEE000EEC13 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D8C42324517CEE000EEC13 /* HelpView.swift */; };
@@ -73,6 +78,11 @@
 		C99F921E2442F851000DD436 /* TestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailView.swift; sourceTree = "<group>"; };
 		C99F92202443CE54000DD436 /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
 		C99F92222443D159000DD436 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
+		C9AB41952454DC2300B50FA4 /* MessageCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCellView.swift; sourceTree = "<group>"; };
+		C9AB41972454DD2A00B50FA4 /* MessageTypeCountCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTypeCountCircleView.swift; sourceTree = "<group>"; };
+		C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTypeColor.swift; sourceTree = "<group>"; };
+		C9AB419B2454DE3600B50FA4 /* TestDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailsHeaderView.swift; sourceTree = "<group>"; };
+		C9AB419D2454DF5900B50FA4 /* RawTestLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTestLogView.swift; sourceTree = "<group>"; };
 		C9CD2C0B24454428001A3091 /* NewTestModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestModalView.swift; sourceTree = "<group>"; };
 		C9CD2C0E2445949A001A3091 /* StandardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardButton.swift; sourceTree = "<group>"; };
 		C9D8C42324517CEE000EEC13 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
@@ -200,9 +210,9 @@
 		C99F921D2442F842000DD436 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C9AB41942454DC0B00B50FA4 /* Test Details */,
 				C9CD2C0D2445947F001A3091 /* Components */,
 				C966241E243E28E5005D08F4 /* ContentView.swift */,
-				C99F921E2442F851000DD436 /* TestDetailView.swift */,
 				C99F92202443CE54000DD436 /* TestListView.swift */,
 				C99F92222443D159000DD436 /* ToolbarView.swift */,
 				C9CD2C0B24454428001A3091 /* NewTestModalView.swift */,
@@ -211,6 +221,19 @@
 				C9D8C42324517CEE000EEC13 /* HelpView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		C9AB41942454DC0B00B50FA4 /* Test Details */ = {
+			isa = PBXGroup;
+			children = (
+				C99F921E2442F851000DD436 /* TestDetailView.swift */,
+				C9AB41952454DC2300B50FA4 /* MessageCellView.swift */,
+				C9AB41972454DD2A00B50FA4 /* MessageTypeCountCircleView.swift */,
+				C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */,
+				C9AB419B2454DE3600B50FA4 /* TestDetailsHeaderView.swift */,
+				C9AB419D2454DF5900B50FA4 /* RawTestLogView.swift */,
+			);
+			path = "Test Details";
 			sourceTree = "<group>";
 		};
 		C9CD2C0D2445947F001A3091 /* Components */ = {
@@ -353,6 +376,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9AB41982454DD2A00B50FA4 /* MessageTypeCountCircleView.swift in Sources */,
 				C99F92212443CE54000DD436 /* TestListView.swift in Sources */,
 				C966241B243E28E5005D08F4 /* AppDelegate.swift in Sources */,
 				C96EE75E2442535D005CAAF1 /* APIMiddlewareController.swift in Sources */,
@@ -360,6 +384,8 @@
 				C95AA6BE243ED7F600BA95E7 /* AppState.swift in Sources */,
 				C9D8C42424517CEE000EEC13 /* HelpView.swift in Sources */,
 				C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */,
+				C9AB419E2454DF5900B50FA4 /* RawTestLogView.swift in Sources */,
+				C9AB419A2454DDE400B50FA4 /* MessageTypeColor.swift in Sources */,
 				C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */,
 				C9F6CB76244BF93E00945FBF /* Validated.swift in Sources */,
 				C966241D243E28E5005D08F4 /* SceneDelegate.swift in Sources */,
@@ -371,6 +397,8 @@
 				C966241F243E28E5005D08F4 /* ContentView.swift in Sources */,
 				C99F921C2442C22C000DD436 /* AppActions.swift in Sources */,
 				C9F6CB78244BF97000945FBF /* URLStringValidator.swift in Sources */,
+				C9AB419C2454DE3600B50FA4 /* TestDetailsHeaderView.swift in Sources */,
+				C9AB41962454DC2300B50FA4 /* MessageCellView.swift in Sources */,
 				C96A3D2024510F3E00DC3D65 /* Config.swift in Sources */,
 				C9F6CB7C244C299D00945FBF /* ToastMiddlewareController.swift in Sources */,
 				C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */,

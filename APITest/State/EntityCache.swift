@@ -18,16 +18,20 @@ struct EntityCache: Equatable {
     var messages: Cache<API.APITestMessage>
     var sources: Cache<API.OpenAPISource>
 
+    var testLogs: [API.APITestDescriptor.Id: String]
+
     init() {
         tests = [:]
         messages = [:]
         sources = [:]
+        testLogs = [:]
     }
 
     mutating func merge(with other: EntityCache) {
         tests.merge(other.tests, uniquingKeysWith: { $1 })
         messages.merge(other.messages, uniquingKeysWith: { $1 })
         sources.merge(other.sources, uniquingKeysWith: { $1 })
+        testLogs.merge(other.testLogs, uniquingKeysWith: { $1 })
     }
 }
 

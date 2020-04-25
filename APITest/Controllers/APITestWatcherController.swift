@@ -115,6 +115,7 @@ final class APITestWatcherController {
                         switch include {
                         case .a(let descriptor):
                             entities.add(descriptor)
+                            store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
                         }
                     }
                 }

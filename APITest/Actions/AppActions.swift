@@ -23,8 +23,9 @@ enum NewTest: ReSwift.Action {
     case dismiss
 }
 
-struct Toggle: ReSwift.Action {
-    let field: WritableKeyPath<AppState.Toggles, Bool>
+enum Toggle: ReSwift.Action {
+    case field(WritableKeyPath<AppState.Toggles, Bool>)
+    case detailsLogsOrMessages
 }
 
 enum Settings: ReSwift.Action {

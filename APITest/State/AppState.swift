@@ -17,6 +17,8 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var selectedTestId: API.APITestDescriptor.Id?
 
+    var detailsViewing: TestDetailsHeaderView.Viewing
+
     var recentlyUsedSource: API.OpenAPISource.Id?
 
     var toggles: Toggles
@@ -33,6 +35,7 @@ struct AppState: Equatable, ReSwift.StateType {
         toastQueue = []
         recentlyUsedSource = nil
         selectedTestId = nil
+        detailsViewing = .messages
     }
 }
 
@@ -152,6 +155,14 @@ extension AppState {
         case .close as Help:
             state.takeover = .none
             return state
+        case .detailsLogsOrMessages as Toggle:
+            switch state.detailsViewing {
+            case .logs:
+                state.detailsViewing = .messages
+            case .messages:
+                state.detailsViewing = .logs
+            }
+            return state
         case .show(let content) as Toast:
             state.toastQueue.append(content)
             return state
@@ -166,8 +177,8 @@ extension AppState {
         case let selectTest as SelectTest:
             state.selectedTestId = selectTest.testId
             return state
-        case let toggle as Toggle:
-            state.toggles[keyPath: toggle.field].toggle()
+        case .field(let field) as Toggle:
+            state.toggles[keyPath: field].toggle()
             return state
         default:
             return state
