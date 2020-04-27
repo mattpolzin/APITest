@@ -54,28 +54,39 @@ struct TestDetailView: View {
     }
 
     let state: State
-    let filters: AppState.Toggles.Messages
+    let messageTypeFilters: AppState.Toggles.Messages
+    let filterText: String
 
     var successCount: Int? {
-        return state.populatedValues?.messages.filter { $0.messageType == .success }.count
+        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .success }.count
     }
 
     var warningCount: Int? {
-        return state.populatedValues?.messages.filter { $0.messageType == .warning }.count
+        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .warning }.count
     }
 
     var errorCount: Int? {
-        return state.populatedValues?.messages.filter { $0.messageType == .error }.count
+        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .error }.count
     }
 
+    /// Apply only the text filter.
+    func textFilter(_ message: API.APITestMessage) -> Bool {
+        return filterText.isEmpty
+            || message.message.contains(filterText)
+            || (message.context?.contains(filterText) ?? false)
+            || (message.path?.contains(filterText) ?? false)
+    }
+
+    /// Apply both the message type and text filters.
     func messageFilter(_ message: API.APITestMessage) -> Bool {
         let allowedMessageTypes: [API.MessageType] = [
-            filters.showSuccessMessages ? .success : nil,
-            filters.showWarningMessages ? .warning : nil,
-            filters.showErrorMessages ? .error : nil
+            messageTypeFilters.showSuccessMessages ? .success : nil,
+            messageTypeFilters.showWarningMessages ? .warning : nil,
+            messageTypeFilters.showErrorMessages ? .error : nil
         ].compactMap { $0 }
 
         return allowedMessageTypes.contains(message.messageType)
+            && textFilter(message)
     }
 
     let dateFormatter: DateFormatter = {
@@ -93,12 +104,13 @@ struct TestDetailView: View {
                 successCount: successCount,
                 warningCount: warningCount,
                 errorCount: errorCount,
-                filters: filters,
+                messageTypeFilters: messageTypeFilters,
+                filterText: filterText,
                 viewing: state.viewing
             ).padding(.top, 10).padding(.bottom, 5)
 
             // source subheader
-            Text(state.populatedValues.map { "Source: \($0.source.uri)" } ?? "").font(.subheadline)
+            Text(state.populatedValues.map { "OpenAPI Source: \($0.source.uri)" } ?? "").font(.subheadline)
                 .padding(.bottom, 5)
 
             // details
@@ -140,10 +152,12 @@ extension TestDetailView {
     init(
         forTestId testId: API.APITestDescriptor.Id?,
         in entities: EntityCache,
-        withFilters filters: AppState.Toggles.Messages,
+        withMessageTypeFilters messageTypeFilters: AppState.Toggles.Messages,
+        filterText: String,
         viewing: TestDetailsHeaderView.Viewing
     ) {
-        self.filters = filters
+        self.messageTypeFilters = messageTypeFilters
+        self.filterText = filterText
         guard let test = testId?.materialize(from: entities) else {
             self.state = .empty
             return
@@ -169,6 +183,6 @@ extension TestDetailView {
 
 struct TestDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        TestDetailView(state: .loading, filters: .init())
+        TestDetailView(state: .loading, messageTypeFilters: .init(), filterText: "")
     }
 }

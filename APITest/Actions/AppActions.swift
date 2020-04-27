@@ -33,6 +33,10 @@ enum Settings: ReSwift.Action {
     case changeHost(proposedURL: String)
 }
 
+enum Filter: ReSwift.Action {
+    case apply(String)
+}
+
 enum Help: ReSwift.Action {
     case open
     case close

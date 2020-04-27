@@ -89,26 +89,28 @@ struct ContentView: View {
             if Device.current == .iPhone {
                 NavigationView {
                     TestListView(
-                        tests: Array(self.entities.tests.values),
-                        selectedTestId: self.state.selectedTestId
+                        tests: Array(entities.tests.values),
+                        selectedTestId: state.selectedTestId
                     ).frame(width: 330)
                     TestDetailView(
-                        forTestId: self.state.selectedTestId,
-                        in: self.state.entities,
-                        withFilters: state.toggles.messages,
+                        forTestId: state.selectedTestId,
+                        in: state.entities,
+                        withMessageTypeFilters: state.toggles.messages,
+                        filterText: state.filterText,
                         viewing: state.detailsViewing
                     ).frame(maxWidth: .infinity)
                 }
             } else {
                 HStack {
                     TestListView(
-                        tests: Array(self.entities.tests.values),
-                        selectedTestId: self.state.selectedTestId
+                        tests: Array(entities.tests.values),
+                        selectedTestId: state.selectedTestId
                     ).frame(width: 330)
                     TestDetailView(
-                        forTestId: self.state.selectedTestId,
-                        in: self.state.entities,
-                        withFilters: state.toggles.messages,
+                        forTestId: state.selectedTestId,
+                        in: state.entities,
+                        withMessageTypeFilters: state.toggles.messages,
+                        filterText: state.filterText,
                         viewing: state.detailsViewing
                     ).frame(maxWidth: .infinity)
                 }

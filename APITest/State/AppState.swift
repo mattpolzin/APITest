@@ -22,6 +22,7 @@ struct AppState: Equatable, ReSwift.StateType {
     var recentlyUsedSource: API.OpenAPISource.Id?
 
     var toggles: Toggles
+    var filterText: String
 
     var takeover: Takeover
 
@@ -31,6 +32,7 @@ struct AppState: Equatable, ReSwift.StateType {
         entities = .init()
         host = Config.host
         toggles = .init(messages: .init())
+        filterText = ""
         takeover = .none
         toastQueue = []
         recentlyUsedSource = nil
@@ -173,6 +175,9 @@ extension AppState {
             if case let .settings(editor) = state.takeover {
                 state.takeover = .settings(editor.with(host: proposedURL))
             }
+            return state
+        case .apply(let filterText) as Filter:
+            state.filterText = filterText
             return state
         case let selectTest as SelectTest:
             state.selectedTestId = selectTest.testId

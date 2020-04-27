@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 struct SettingsView: View {
-    var settingsEditorState: AppState.SettingsEditor?
+    let settingsEditorState: AppState.SettingsEditor?
 
     var host: Binding<String> {
         Binding(

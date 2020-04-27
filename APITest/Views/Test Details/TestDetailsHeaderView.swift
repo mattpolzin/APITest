@@ -14,7 +14,8 @@ struct TestDetailsHeaderView: View {
     let warningCount: Int?
     let errorCount: Int?
 
-    let filters: AppState.Toggles.Messages
+    let messageTypeFilters: AppState.Toggles.Messages
+    let filterText: String
 
     let viewing: Viewing?
 
@@ -28,18 +29,19 @@ struct TestDetailsHeaderView: View {
             HStack {
                 Text("Test Details").font(.title).padding(.trailing, 2)
                 HStack {
-                    MessageTypeCountCircleView(count: successCount, messageType: .success, filtered: filters.showSuccessMessages)
+                    MessageTypeCountCircleView(count: successCount, messageType: .success, filtered: messageTypeFilters.showSuccessMessages)
                         .onTapGesture {
                             store.dispatch(Toggle.field(\.messages.showSuccessMessages))
                     }
-                    MessageTypeCountCircleView(count: warningCount, messageType: .warning, filtered: filters.showWarningMessages)
+                    MessageTypeCountCircleView(count: warningCount, messageType: .warning, filtered: messageTypeFilters.showWarningMessages)
                         .onTapGesture {
                             store.dispatch(Toggle.field(\.messages.showWarningMessages))
                     }
-                    MessageTypeCountCircleView(count: errorCount, messageType: .error, filtered: filters.showErrorMessages)
+                    MessageTypeCountCircleView(count: errorCount, messageType: .error, filtered: messageTypeFilters.showErrorMessages)
                         .onTapGesture {
                             store.dispatch(Toggle.field(\.messages.showErrorMessages))
                     }
+                    SearchTextField(filterText: filterText).frame(maxWidth: 300)
                 }.disabled(viewing == .logs).opacity(viewing == .logs ? 0.25 : 1.0)
             }
             HStack {
