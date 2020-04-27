@@ -233,12 +233,16 @@ extension APIMiddlewareController {
                 receiveCompletion: { result in
                     switch result {
                     case .failure(let failure):
-                        store.dispatch(Toast.apiError(message: failure.localizedDescription))
+                        DispatchQueue.main.async {
+                            store.dispatch(Toast.apiError(message: failure.localizedDescription))
+                        }
                         print(String(describing: failure))
                     case .finished:
                         break
                     }
-                    self.requests.removeValue(forKey: requestId)
+                    DispatchQueue.main.async {
+                        self.requests.removeValue(forKey: requestId)
+                    }
             },
                 receiveValue: { response in
                     guard let status = (response.response as? HTTPURLResponse)?.statusCode else {
@@ -254,11 +258,17 @@ extension APIMiddlewareController {
 
                     guard let value = String(data: response.data, encoding: .utf8) else {
                         print("failed to decode JSON:API response")
-                        store.dispatch(Toast.apiError(message: "Failed to decode plaintext response"))
+                        DispatchQueue.main.async {
+                            store.dispatch(Toast.apiError(message: "Failed to decode plaintext response"))
+                        }
                         return
                     }
 
-                    store.dispatch(entities(value).asUpdate)
+                    let update = entities(value).asUpdate
+
+                    DispatchQueue.main.async {
+                        store.dispatch(update)
+                    }
             })
 
         self.requests[requestId] = inFlightRequest
@@ -309,12 +319,16 @@ extension APIMiddlewareController {
                 receiveCompletion: { result in
                     switch result {
                     case .failure(let failure):
-                        store.dispatch(Toast.apiError(message: failure.localizedDescription))
+                        DispatchQueue.main.async {
+                            store.dispatch(Toast.apiError(message: failure.localizedDescription))
+                        }
                         print(String(describing: failure))
                     case .finished:
                         break
                     }
-                    self.requests.removeValue(forKey: requestId)
+                    DispatchQueue.main.async {
+                        self.requests.removeValue(forKey: requestId)
+                    }
             },
                 receiveValue: { response in
                     guard let status = (response.response as? HTTPURLResponse)?.statusCode else {
@@ -329,12 +343,18 @@ extension APIMiddlewareController {
                     }
 
                     guard let value = try? Self.decode(Response.self, from: response.data) else {
-                            print("failed to decode JSON:API response")
+                        print("failed to decode JSON:API response")
+                        DispatchQueue.main.async {
                             store.dispatch(Toast.apiError(message: "Failed to decode JSON:API response"))
-                            return
+                        }
+                        return
                     }
 
-                    store.dispatch(entities(value).asUpdate)
+                    let update = entities(value).asUpdate
+
+                    DispatchQueue.main.async {
+                        store.dispatch(update)
+                    }
         })
 
         self.requests[requestId] = inFlightRequest
