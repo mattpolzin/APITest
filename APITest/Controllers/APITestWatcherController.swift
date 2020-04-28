@@ -71,7 +71,9 @@ final class APITestWatcherController {
             websocket.onClose.whenComplete(self.onClose(result:))
         }.whenFailure { error in
             print(error)
-            store.dispatch(Toast.networkError(message: "Failed to start watching tests"))
+            DispatchQueue.main.async {
+                store.dispatch(Toast.networkError(message: "Failed to start watching tests"))
+            }
         }
     }
 
@@ -86,7 +88,9 @@ final class APITestWatcherController {
         if case .failure(let error) = result {
             // TODO: attempt reconnect on a timed interval
             print(error)
-            store.dispatch(Toast.networkError(message: "Test watching killed due to error"))
+            DispatchQueue.main.async {
+                store.dispatch(Toast.networkError(message: "Test watching killed due to error"))
+            }
         }
         self.state = .disconnected
     }
@@ -98,7 +102,9 @@ final class APITestWatcherController {
             decoder.dateDecodingStrategy = .iso8601
             guard let document = try text.data(using: .utf8).map({ try decoder.decode(SingleDescriptorOrMessage.self, from: $0) }) else {
                 print("no document?")
-                store.dispatch(Toast.serverError(message: "Did not receive expected response body from server when listening for Test updates."))
+                DispatchQueue.main.async {
+                    store.dispatch(Toast.serverError(message: "Did not receive expected response body from server when listening for Test updates."))
+                }
                 return
             }
 
@@ -115,7 +121,9 @@ final class APITestWatcherController {
                         switch include {
                         case .a(let descriptor):
                             entities.add(descriptor)
-                            store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
+                            DispatchQueue.main.async {
+                                store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
+                            }
                         }
                     }
                 }
@@ -126,10 +134,16 @@ final class APITestWatcherController {
                 }
             }
 
-            store.dispatch(entities.asUpdate)
+            let update = entities.asUpdate
+
+            DispatchQueue.main.async {
+                store.dispatch(update)
+            }
         } catch {
             print(error)
-            store.dispatch(Toast.networkError(message: error.localizedDescription))
+            DispatchQueue.main.async {
+                store.dispatch(Toast.networkError(message: error.localizedDescription))
+            }
         }
     }
 }

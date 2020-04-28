@@ -27,7 +27,7 @@ struct SettingsView: View {
                     VStack {
                         Text("Settings").font(.title)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("API Test Host:").padding(.bottom, 4)
+                            Text("API Test Service Host:").padding(.bottom, 4)
                             Text("The host of the API Testing Service, not the service being tested.").italic().font(.footnote).padding(.bottom, 5)
                             HStack {
                                 TextField("Host", text: self.host)
