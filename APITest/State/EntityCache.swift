@@ -14,23 +14,26 @@ import ReSwift
 struct EntityCache: Equatable {
     typealias Cache<E: JSONAPI.IdentifiableResourceObjectType> = [E.Id: E]
 
+    var testSources: Cache<API.OpenAPISource>
+    var testProperties: Cache<API.APITestProperties>
     var tests: Cache<API.APITestDescriptor>
     var messages: Cache<API.APITestMessage>
-    var sources: Cache<API.OpenAPISource>
 
     var testLogs: [API.APITestDescriptor.Id: String]
 
     init() {
+        testSources = [:]
+        testProperties = [:]
         tests = [:]
         messages = [:]
-        sources = [:]
         testLogs = [:]
     }
 
     mutating func merge(with other: EntityCache) {
+        testSources.merge(other.testSources, uniquingKeysWith: { $1 })
+        testProperties.merge(other.testProperties, uniquingKeysWith: { $1 })
         tests.merge(other.tests, uniquingKeysWith: { $1 })
         messages.merge(other.messages, uniquingKeysWith: { $1 })
-        sources.merge(other.sources, uniquingKeysWith: { $1 })
         testLogs.merge(other.testLogs, uniquingKeysWith: { $1 })
     }
 }
@@ -68,16 +71,20 @@ protocol MaterializableDescription {
     static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<IdentifiableType>> { get }
 }
 
+extension API.OpenAPISourceDescription: MaterializableDescription {
+    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.OpenAPISource>> { \.testSources }
+}
+
+extension API.APITestPropertiesDescription: MaterializableDescription {
+    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestProperties>> { \.testProperties }
+}
+
 extension API.APITestDescriptorDescription: MaterializableDescription {
     static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestDescriptor>> { \.tests }
 }
 
 extension API.APITestMessageDescription: MaterializableDescription {
     static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestMessage>> { \.messages }
-}
-
-extension API.OpenAPISourceDescription: MaterializableDescription {
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.OpenAPISource>> { \.sources }
 }
 
 extension JSONAPI.Id where

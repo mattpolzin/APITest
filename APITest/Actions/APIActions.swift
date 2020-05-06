@@ -21,7 +21,7 @@ extension API {
         enum RequestSource: Equatable {
             case `default`
             case new(uri: String)
-            case existing(id: API.OpenAPISource.Id)
+            case existing(id: API.APITestProperties.Id)
         }
     }
 
@@ -30,12 +30,12 @@ extension API {
         let requestType: RequestType
 
         enum RequestType {
-            case descriptor(includeMessages: Bool, includeSource: Bool)
+            case descriptor(includeMessages: Bool, includeProperties: (Bool, alsoIncludeSource: Bool))
             case rawLogs
         }
 
-        static func requestDescriptor(id: API.APITestDescriptor.Id, includeMessages: Bool, includeSource: Bool) -> Self {
-            .init(id: id, requestType: .descriptor(includeMessages: includeMessages, includeSource: includeSource))
+        static func requestDescriptor(id: API.APITestDescriptor.Id, includeMessages: Bool, includeProperties: (Bool, alsoIncludeSource: Bool)) -> Self {
+            .init(id: id, requestType: .descriptor(includeMessages: includeMessages, includeProperties: (includeProperties.0, alsoIncludeSource: includeProperties.alsoIncludeSource)))
         }
 
         static func requestRawLogs(id: API.APITestDescriptor.Id) -> Self {
@@ -48,6 +48,10 @@ extension API {
     }
 
     enum GetAllSources: ReSwift.Action {
+        case request
+    }
+
+    enum GetAllProperties: ReSwift.Action {
         case request
     }
 

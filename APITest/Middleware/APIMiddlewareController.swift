@@ -49,8 +49,8 @@ final class APIMiddlewareController {
                     switch source {
                     case .default:
                         relationships = .init()
-                    case .existing(id: let sourceId):
-                        relationships = .init(openAPISource: .init(id: sourceId))
+                    case .existing(id: let propertiesId):
+                        relationships = .init(testProperties: .init(id: propertiesId))
                     case .new(uri: let uri):
                         fatalError("unimplemented API call for a new OpenAPISource with uri \(uri)")
                     }
@@ -70,9 +70,10 @@ final class APIMiddlewareController {
                             .post,
                             host: state.host,
                             path: "/api_tests",
-                            body: document) { (_: API.SingleAPITestDescriptorDocument) -> EntityCache in
+                            body: document
+                        ) { (_: API.SingleAPITestDescriptorDocument) -> EntityCache in
 
-                                return EntityCache()
+                            return EntityCache()
                         }
                     } catch {
                         store.dispatch(Toast.apiError(message: "Failed to start a new test run"))
@@ -84,42 +85,49 @@ final class APIMiddlewareController {
                     self.jsonApiRequest(
                         .get,
                         host: state.host,
-                        path: "/api_tests") { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
-                            guard let primaryResources = response.body.primaryResource?.values,
-                                let includes = response.body.includes?.values else {
-                                    print("failed to retrieve primary resources and includes from batch test descriptor response")
-                                    store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response"))
-                                    return EntityCache()
+                        path: "/api_tests"
+                    ) { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
+                        guard let primaryResources = response.body.primaryResource?.values,
+                            let includes = response.body.includes?.values else {
+                                print("failed to retrieve primary resources and includes from batch test descriptor response")
+                                store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response"))
+                                return EntityCache()
+                        }
+
+                        var entities = EntityCache()
+
+                        entities.add(primaryResources)
+                        for include in includes {
+                            switch include {
+                            case .a(let properties):
+                                entities.add(properties)
+                            case .b(let source):
+                                entities.add(source)
+                            case .c(let message):
+                                entities.add(message)
                             }
+                        }
 
-                            var entities = EntityCache()
-
-                            entities.add(primaryResources)
-                            for include in includes {
-                                switch include {
-                                case .a(let source):
-                                    entities.add(source)
-                                case .b(let message):
-                                    entities.add(message)
-                                }
-                            }
-
-                            return entities
+                        return entities
                     }
 
                 case let request as API.GetTest:
                     switch request.requestType {
-                    case .descriptor(let includeMessages, let includeSource):
+                    case .descriptor(let includeMessages, let (includeProperties, alsoIncludeSource)):
                         var includes = [String]()
 
-                        if includeSource { includes.append("openAPISource") }
+                        if includeProperties {
+                            includes.append("testProperties")
+                            if alsoIncludeSource { includes.append("testProperties.openAPISource") }
+                        }
                         if includeMessages { includes.append("messages") }
 
                         self.jsonApiRequest(
                             .get,
                             host: state.host,
                             path: "/api_tests/\(request.id.rawValue.uuidString)",
-                        including: includes) { (response: API.SingleAPITestDescriptorDocument) -> EntityCache in
+                            including: includes
+                        ) { (response: API.SingleAPITestDescriptorDocument) -> EntityCache in
                             guard let primaryResource = response.body.primaryResource?.value,
                                 let includes = response.body.includes?.values else {
                                     print("failed to retrieve primary resources and includes from single test descriptor response")
@@ -132,9 +140,11 @@ final class APIMiddlewareController {
                             entities.add(primaryResource)
                             for include in includes {
                                 switch include {
-                                case .a(let source):
+                                case .a(let properties):
+                                    entities.add(properties)
+                                case .b(let source):
                                     entities.add(source)
-                                case .b(let message):
+                                case .c(let message):
                                     entities.add(message)
                                 }
                             }
@@ -146,12 +156,13 @@ final class APIMiddlewareController {
                         self.plaintextRequest(
                             .get,
                             host: state.host,
-                            path: "/api_tests/\(request.id.rawValue.uuidString)/logs") { logs in
-                                var entities = EntityCache()
+                            path: "/api_tests/\(request.id.rawValue.uuidString)/logs"
+                        ) { logs in
+                            var entities = EntityCache()
 
-                                entities.testLogs[request.id] = logs
+                            entities.testLogs[request.id] = logs
 
-                                return entities
+                            return entities
                         }
                     }
 
@@ -159,18 +170,47 @@ final class APIMiddlewareController {
                     self.jsonApiRequest(
                         .get,
                         host: state.host,
-                        path: "/openapi_sources") { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
-                            guard let primaryResources = response.body.primaryResource?.values else {
-                                    print("failed to retrieve primary resources from batch openapi source response")
-                                    store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response"))
-                                    return EntityCache()
+                        path: "/openapi_sources"
+                    ) { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
+                        guard let primaryResources = response.body.primaryResource?.values else {
+                            print("failed to retrieve primary resources from batch openapi source response")
+                            store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response"))
+                            return EntityCache()
+                        }
+
+                        var entities = EntityCache()
+
+                        entities.add(primaryResources)
+
+                        return entities
+                    }
+
+                case .request as API.GetAllProperties:
+                    self.jsonApiRequest(
+                        .get,
+                        host: state.host,
+                        path: "/api_test_properties",
+                        including: ["openAPISource"]
+                    ) { (response: API.BatchAPITestPropertiesDocument) -> EntityCache in
+                        guard let primaryResources = response.body.primaryResource?.values,
+                            let includes = response.body.includes?.values else {
+                                print("failed to retrieve primary resources from batch api test properties response")
+                                store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch api test properties response"))
+                                return EntityCache()
+                        }
+
+                        var entities = EntityCache()
+
+                        entities.add(primaryResources)
+
+                        for include in includes {
+                            switch include {
+                            case .a(let sources):
+                                entities.add(sources)
                             }
+                        }
 
-                            var entities = EntityCache()
-
-                            entities.add(primaryResources)
-
-                            return entities
+                        return entities
                     }
 
                 case .start as API.WatchTests:

@@ -21,7 +21,7 @@ struct ToolbarView: View {
         HStack {
             StandardButton(
                 action: {
-                    store.dispatch(API.GetAllSources.request)
+                    store.dispatch(API.GetAllProperties.request)
                     store.dispatch(NewTest.open)
             },
                 label: "New Test"

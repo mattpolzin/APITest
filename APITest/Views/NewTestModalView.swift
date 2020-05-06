@@ -9,22 +9,36 @@
 import Foundation
 import SwiftUI
 import APIModels
+import JSONAPI
 
 struct NewTestModalView: View {
-    let sources: EntityCache.Cache<API.OpenAPISource>
-    @State private var selectedSource: RequestSource = .default
+
+    @State private var selectedProperties: RequestProperties = .default
     let isPresented: Bool
 
-    var sourceOptions: [RequestSource] {
-        [.default]
-            + sources.map { .existing($0.value) }
-//            + [.new(uri: "")]
+    let propertiesOptions: [RequestProperties]
+
+    init(entityCache: EntityCache, selection: API.APITestProperties.Id? = nil, isPresented: Bool) {
+
+        let existingOptions: [RequestProperties] = entityCache.testProperties.values
+            .compactMap { properties in (properties ~> \.openAPISource).materialize(from: entityCache).map { (properties, $0) } }
+            .map { (properties, source) in
+                .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
+        }
+
+        let selectedProperties: RequestProperties? = selection.flatMap { $0.materialize(from: entityCache) }
+            .flatMap { properties in (properties ~> \.openAPISource).materialize(from: entityCache).map { (properties, $0) } }
+            .map { (properties, source) in
+                .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
+        }
+
+        self.init(properties: [.default] + existingOptions, selection: selectedProperties, isPresented: isPresented)
     }
 
-    init(sources apiSources: EntityCache.Cache<API.OpenAPISource>, selection: API.OpenAPISource.Id? = nil, isPresented: Bool) {
-        sources = apiSources
+    init(properties: [RequestProperties], selection: RequestProperties? = nil, isPresented: Bool) {
+        self.propertiesOptions = properties
         self.isPresented = isPresented
-        selectedSource = selection.flatMap { apiSources[$0] }.flatMap { .existing($0) } ?? .default
+        self.selectedProperties = selection ?? .default
     }
 
     var body: some View {
@@ -33,12 +47,12 @@ struct NewTestModalView: View {
                 VStack {
                     Text("New Test").font(.title)
                     List {
-                        ForEach(sourceOptions) { source in
+                        ForEach(propertiesOptions) { properties in
                             ZStack(alignment: .center) {
-                                Rectangle().fill(source == self.selectedSource ? Color.accentColor : Color.clear)
-                                source.textView
+                                Rectangle().fill(properties == self.selectedProperties ? Color.accentColor : Color.clear)
+                                HStack { ForEach(0..<properties.textViews.count) { properties.textViews[$0] } }
                             }.contentShape(Rectangle())
-                            .onTapGesture { self.selectedSource = source }
+                            .onTapGesture { self.selectedProperties = properties }
                             .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                         }
                     }
@@ -50,7 +64,7 @@ struct NewTestModalView: View {
 
                         StandardButton(
                             action: {
-                                store.dispatch(self.selectedSource.action)
+                                store.dispatch(self.selectedProperties.action)
                                 store.dispatch(NewTest.dismiss)
                             },
                             label: "Start"
@@ -68,10 +82,10 @@ struct NewTestModalView: View {
 }
 
 extension NewTestModalView {
-    enum RequestSource: Equatable, Identifiable, CustomStringConvertible {
+    enum RequestProperties: Equatable, Swift.Identifiable, CustomStringConvertible {
         case `default`
         case new(uri: String)
-        case existing(API.OpenAPISource)
+        case existing(API.APITestProperties.Id, sourceUri: String, apiHostOverride: String?)
 
         var description: String {
             switch self {
@@ -79,8 +93,8 @@ extension NewTestModalView {
                 return "default"
             case .new:
                 return "new"
-            case .existing(let source):
-                return source.uri
+            case .existing(_, let sourceUri, let hostOverride):
+                return "docs: \(sourceUri)" + (hostOverride.map { ", server: \($0)" } ?? "")
             }
         }
 
@@ -90,17 +104,17 @@ extension NewTestModalView {
                 return "default"
             case .new:
                 return "new"
-            case .existing(let source):
-                return source.id.rawValue.uuidString
+            case .existing(let id, _, _):
+                return id.rawValue.uuidString
             }
         }
 
-        var textView: Text {
+        var textViews: [Text] {
             switch self {
             case .default, .new:
-                return Text(description).bold()
-            case .existing:
-                return Text(description).italic()
+                return [ Text(description).bold() ]
+            case .existing(_, let sourceUri, let hostOverride):
+                return [ Text("docs: ").bold(), Text(sourceUri).italic() ] + (hostOverride.map { [ Text(", "), Text("server: ").bold(), Text($0).italic() ] } ?? [])
             }
         }
 
@@ -110,8 +124,8 @@ extension NewTestModalView {
                 return API.StartTest.request(.default)
             case .new(uri: let uri):
                 return API.StartTest.request(.new(uri: uri))
-            case .existing(let source):
-                return API.StartTest.request(.existing(id: source.id))
+            case .existing(let id, _, _):
+                return API.StartTest.request(.existing(id: id))
             }
         }
     }
@@ -119,6 +133,6 @@ extension NewTestModalView {
 
 struct NewTestView_Previews: PreviewProvider {
     static var previews: some View {
-        NewTestModalView(sources: [:], isPresented: true)
+        NewTestModalView(properties: [], isPresented: true)
     }
 }

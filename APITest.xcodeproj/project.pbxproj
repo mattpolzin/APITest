@@ -682,8 +682,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:mattpolzin/jsonapi-openapi-test-server.git";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.0;
 			};
 		};
 		C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */ = {

@@ -132,8 +132,8 @@ extension ContentView {
                 VStack {
                     Spacer().frame(maxHeight: .infinity)
                     NewTestModalView(
-                        sources: entities.sources,
-                        selection: state.recentlyUsedSource,
+                        entityCache: entities,
+                        selection: state.recentlyUsedProperties,
                         isPresented: state.takeover.modal?.isNewTest ?? false
                     )
                     Spacer().frame(maxHeight: .infinity)

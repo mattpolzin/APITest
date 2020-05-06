@@ -104,18 +104,18 @@
         "package": "JSONAPI-OpenAPI",
         "repositoryURL": "https://github.com/mattpolzin/JSONAPI-OpenAPI.git",
         "state": {
-          "branch": "feature/gen-swift",
-          "revision": "a8f4a79abf79c6b547df74c7b87389860244894b",
-          "version": null
+          "branch": null,
+          "revision": "110e29d94364f86100fdcfc325a1f52601222443",
+          "version": "0.16.0"
         }
       },
       {
         "package": "jsonapi-openapi-test-server",
         "repositoryURL": "git@github.com:mattpolzin/jsonapi-openapi-test-server.git",
         "state": {
-          "branch": "master",
-          "revision": "fda007b578a0d0e95908318ad353a15bdcbb102f",
-          "version": null
+          "branch": null,
+          "revision": "6632e09f72e14c0dd8052de5966fcdc635788575",
+          "version": "0.1.0"
         }
       },
       {

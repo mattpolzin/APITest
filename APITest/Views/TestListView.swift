@@ -62,7 +62,7 @@ struct TestListView: View {
                     .listRowInsets(
                         .init(top: 0, leading: 0, bottom: 0, trailing: 0)
                 ).onTapGesture {
-                    store.dispatch(API.GetTest.requestDescriptor(id: test.id, includeMessages: true, includeSource: true))
+                    store.dispatch(API.GetTest.requestDescriptor(id: test.id, includeMessages: true, includeProperties: (true, alsoIncludeSource: true)))
                     store.dispatch(API.GetTest.requestRawLogs(id: test.id))
                     store.dispatch(test.select)
                 }.background(

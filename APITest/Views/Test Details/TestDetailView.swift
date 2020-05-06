@@ -162,9 +162,10 @@ extension TestDetailView {
             self.state = .empty
             return
         }
-        guard let source = (test ~> \.openAPISource).materialize(from: entities) else {
-            self.state = .loading
-            return
+        guard let properties = (test ~> \.testProperties).materialize(from: entities),
+            let source = (properties ~> \.openAPISource).materialize(from: entities) else {
+                self.state = .loading
+                return
         }
         let messages = (test ~> \.messages).compactMap { $0.materialize(from: entities) }
         let logs = entities.testLogs[test.id] ?? ""

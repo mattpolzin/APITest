@@ -19,7 +19,7 @@ struct AppState: Equatable, ReSwift.StateType {
 
     var detailsViewing: TestDetailsHeaderView.Viewing
 
-    var recentlyUsedSource: API.OpenAPISource.Id?
+    var recentlyUsedProperties: API.APITestProperties.Id?
 
     var toggles: Toggles
     var filterText: String
@@ -35,7 +35,7 @@ struct AppState: Equatable, ReSwift.StateType {
         filterText = ""
         takeover = .none
         toastQueue = []
-        recentlyUsedSource = nil
+        recentlyUsedProperties = nil
         selectedTestId = nil
         detailsViewing = .messages
     }
