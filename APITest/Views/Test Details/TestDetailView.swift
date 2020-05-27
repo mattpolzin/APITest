@@ -120,7 +120,7 @@ struct TestDetailView: View {
                         RawTestLogView(logs: state.logs)
                     } else if state.viewing == .messages {
                         List {
-                            ForEach(state.messages.filter(self.messageFilter), id: \.id) { message in
+                            ForEach(state.messages.filter(self.messageFilter).sorted(by: API.APITestMessage.createdAtOrdering), id: \.id) { message in
                                 MessageCellView(
                                     messageType: message.messageType,
                                     message: message.message,
