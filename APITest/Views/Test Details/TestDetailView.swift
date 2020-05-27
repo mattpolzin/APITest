@@ -58,15 +58,15 @@ struct TestDetailView: View {
     let filterText: String
 
     var successCount: Int? {
-        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .success }.count
+        return state.populatedValues?.messages.lazy.filter(self.textFilter).filter { $0.messageType == .success }.count
     }
 
     var warningCount: Int? {
-        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .warning }.count
+        return state.populatedValues?.messages.lazy.filter(self.textFilter).filter { $0.messageType == .warning }.count
     }
 
     var errorCount: Int? {
-        return state.populatedValues?.messages.filter(self.textFilter).filter { $0.messageType == .error }.count
+        return state.populatedValues?.messages.lazy.filter(self.textFilter).filter { $0.messageType == .error }.count
     }
 
     /// Apply only the text filter.
@@ -87,6 +87,13 @@ struct TestDetailView: View {
 
         return allowedMessageTypes.contains(message.messageType)
             && textFilter(message)
+    }
+
+    /// Apply the message filter and sort by newest
+    func sortedAndFiltered(_ messages: [API.APITestMessage]) -> [API.APITestMessage] {
+        messages.lazy
+            .filter(self.messageFilter)
+            .sorted(by: API.APITestMessage.createdAtOrdering)
     }
 
     let dateFormatter: DateFormatter = {
@@ -120,7 +127,7 @@ struct TestDetailView: View {
                         RawTestLogView(logs: state.logs)
                     } else if state.viewing == .messages {
                         List {
-                            ForEach(state.messages.filter(self.messageFilter).sorted(by: API.APITestMessage.createdAtOrdering), id: \.id) { message in
+                            ForEach(sortedAndFiltered(state.messages), id: \.id) { message in
                                 MessageCellView(
                                     messageType: message.messageType,
                                     message: message.message,
