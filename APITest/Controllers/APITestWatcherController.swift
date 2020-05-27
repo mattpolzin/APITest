@@ -82,7 +82,7 @@ final class APITestWatcherController {
         let _ = websocket?.close()
     }
 
-    private typealias SingleDescriptorOrMessage = Either<API.SingleAPITestMessageDocument, API.SingleAPITestDescriptorDocument>
+    private typealias SingleDescriptorOrMessage = Either<API.SingleAPITestMessageDocument.SuccessDocument, API.SingleAPITestDescriptorDocument.SuccessDocument>
 
     private func onClose(result: Result<Void, Error>) {
         if case .failure(let error) = result {
@@ -108,30 +108,24 @@ final class APITestWatcherController {
                 return
             }
 
-            var entities = EntityCache()
+            let entities: EntityCache
 
             switch document {
             case .a(let messageDoc):
                 print("adding test message")
-                if let primaryResource = messageDoc.body.primaryResource?.value {
-                    entities.add(primaryResource)
-                }
-                if let includes = messageDoc.body.includes?.values {
-                    for include in includes {
-                        switch include {
-                        case .a(let descriptor):
-                            entities.add(descriptor)
-                            DispatchQueue.main.async {
-                                store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
-                            }
+                entities = messageDoc.resourceCache()
+
+                for include in messageDoc.data.includes.values {
+                    switch include {
+                    case .a(let descriptor):
+                        DispatchQueue.main.async {
+                            store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
                         }
                     }
                 }
             case .b(let descriptorDoc):
                 print("adding test descriptor")
-                if let primaryResource = descriptorDoc.body.primaryResource?.value {
-                    entities.add(primaryResource)
-                }
+                entities = descriptorDoc.resourceCache()
             }
 
             let update = entities.asUpdate

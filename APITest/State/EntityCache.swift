@@ -9,19 +9,19 @@
 import Foundation
 import APIModels
 import JSONAPI
+import JSONAPIResourceCache
 import ReSwift
 
-struct EntityCache: Equatable {
-    typealias Cache<E: JSONAPI.IdentifiableResourceObjectType> = [E.Id: E]
+public struct EntityCache: Equatable, ResourceCache {
 
-    var testSources: Cache<API.OpenAPISource>
-    var testProperties: Cache<API.APITestProperties>
-    var tests: Cache<API.APITestDescriptor>
-    var messages: Cache<API.APITestMessage>
+    var testSources: ResourceHash<API.OpenAPISource>
+    var testProperties: ResourceHash<API.APITestProperties>
+    var tests: ResourceHash<API.APITestDescriptor>
+    var messages: ResourceHash<API.APITestMessage>
 
     var testLogs: [API.APITestDescriptor.Id: String]
 
-    init() {
+    public init() {
         testSources = [:]
         testProperties = [:]
         tests = [:]
@@ -44,60 +44,30 @@ extension EntityCache {
     }
 }
 
-extension EntityCache {
-    subscript<T: JSONAPI.ResourceObjectProxy>(id: T.Id) -> T? where T.Description: MaterializableDescription, T.Description.IdentifiableType == T {
-        get {
-            return self[keyPath: T.Description.cachePath][id]
-        }
-        set {
-            self[keyPath: T.Description.cachePath][id] = newValue
-        }
-    }
-
-    mutating func add<T: JSONAPI.ResourceObjectProxy>(_ resource: T) where T.Description: MaterializableDescription, T.Description.IdentifiableType == T {
-        self[resource.id] = resource
-    }
-
-    mutating func add<T: JSONAPI.ResourceObjectProxy>(_ resources: [T]) where T.Description: MaterializableDescription, T.Description.IdentifiableType == T {
-        for resource in resources {
-            add(resource)
-        }
-    }
+extension API.OpenAPISourceDescription: Materializable {
+    public static var cachePath: WritableKeyPath<EntityCache, ResourceHash<API.OpenAPISource>> { \.testSources }
 }
 
-protocol MaterializableDescription {
-    associatedtype IdentifiableType: JSONAPI.IdentifiableResourceObjectType
-
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<IdentifiableType>> { get }
+extension API.APITestPropertiesDescription: Materializable {
+    public static var cachePath: WritableKeyPath<EntityCache, ResourceHash<API.APITestProperties>> { \.testProperties }
 }
 
-extension API.OpenAPISourceDescription: MaterializableDescription {
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.OpenAPISource>> { \.testSources }
+extension API.APITestDescriptorDescription: Materializable {
+    public static var cachePath: WritableKeyPath<EntityCache, ResourceHash<API.APITestDescriptor>> { \.tests }
 }
 
-extension API.APITestPropertiesDescription: MaterializableDescription {
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestProperties>> { \.testProperties }
-}
-
-extension API.APITestDescriptorDescription: MaterializableDescription {
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestDescriptor>> { \.tests }
-}
-
-extension API.APITestMessageDescription: MaterializableDescription {
-    static var cachePath: WritableKeyPath<EntityCache, EntityCache.Cache<API.APITestMessage>> { \.messages }
+extension API.APITestMessageDescription: Materializable {
+    public static var cachePath: WritableKeyPath<EntityCache, ResourceHash<API.APITestMessage>> { \.messages }
 }
 
 extension JSONAPI.Id where
             IdentifiableType: JSONAPI.ResourceObjectProxy,
-            IdentifiableType.Description: MaterializableDescription,
+            IdentifiableType.Description: Materializable,
             IdentifiableType.Description.IdentifiableType == IdentifiableType,
-            IdentifiableType.Description.IdentifiableType.EntityRawIdType == RawType {
+            IdentifiableType.Description.IdentifiableType.EntityRawIdType == RawType,
+            IdentifiableType.Description.ResourceCacheType == EntityCache {
 
     func materialize(from state: AppState) -> Self.IdentifiableType? {
         return materialize(from: state.entities)
-    }
-
-    func materialize(from cache: EntityCache) -> Self.IdentifiableType? {
-        return cache[keyPath: Self.IdentifiableType.Description.cachePath][self]
     }
 }

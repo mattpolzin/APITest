@@ -29,6 +29,7 @@
 		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
 		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
 		C99F92232443D159000DD436 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92222443D159000DD436 /* ToolbarView.swift */; };
+		C9A41A2E247E368000038208 /* JSONAPIResourceCache in Frameworks */ = {isa = PBXBuildFile; productRef = C9A41A2D247E368000038208 /* JSONAPIResourceCache */; };
 		C9AB41962454DC2300B50FA4 /* MessageCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41952454DC2300B50FA4 /* MessageCellView.swift */; };
 		C9AB41982454DD2A00B50FA4 /* MessageTypeCountCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41972454DD2A00B50FA4 /* MessageTypeCountCircleView.swift */; };
 		C9AB419A2454DDE400B50FA4 /* MessageTypeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */; };
@@ -103,6 +104,7 @@
 				C9E06E4524511ABD00101C04 /* Poly in Frameworks */,
 				C917CF34243EA15500C54CE2 /* TestServerModels in Frameworks */,
 				C900B221243EAD4E00D14F69 /* ReSwift in Frameworks */,
+				C9A41A2E247E368000038208 /* JSONAPIResourceCache in Frameworks */,
 				C9409AEC2441068B008945FB /* WebSocketKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -285,6 +287,7 @@
 				C900B220243EAD4E00D14F69 /* ReSwift */,
 				C9409AEB2441068B008945FB /* WebSocketKit */,
 				C9E06E4424511ABD00101C04 /* Poly */,
+				C9A41A2D247E368000038208 /* JSONAPIResourceCache */,
 			);
 			productName = APITest;
 			productReference = C9662417243E28E5005D08F4 /* APITest.app */;
@@ -343,6 +346,7 @@
 				C900B21F243EAD4E00D14F69 /* XCRemoteSwiftPackageReference "ReSwift" */,
 				C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */,
 				C9E06E4324511ABD00101C04 /* XCRemoteSwiftPackageReference "Poly" */,
+				C9A41A2C247E368000038208 /* XCRemoteSwiftPackageReference "JSONAPI-ResourceStorage" */,
 			);
 			productRefGroup = C9662418243E28E5005D08F4 /* Products */;
 			projectDirPath = "";
@@ -683,7 +687,7 @@
 			repositoryURL = "git@github.com:mattpolzin/jsonapi-openapi-test-server.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.1.0;
+				minimumVersion = 0.2.0;
 			};
 		};
 		C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */ = {
@@ -692,6 +696,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.0.0;
+			};
+		};
+		C9A41A2C247E368000038208 /* XCRemoteSwiftPackageReference "JSONAPI-ResourceStorage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:mattpolzin/JSONAPI-ResourceStorage.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.0;
 			};
 		};
 		C9E06E4324511ABD00101C04 /* XCRemoteSwiftPackageReference "Poly" */ = {
@@ -719,6 +731,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */;
 			productName = WebSocketKit;
+		};
+		C9A41A2D247E368000038208 /* JSONAPIResourceCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9A41A2C247E368000038208 /* XCRemoteSwiftPackageReference "JSONAPI-ResourceStorage" */;
+			productName = JSONAPIResourceCache;
 		};
 		C9E06E4424511ABD00101C04 /* Poly */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -57,7 +57,7 @@ final class APIMiddlewareController {
 
                     let testDescriptor = API.NewAPITestDescriptor(attributes: .none, relationships: relationships, meta: .none, links: .none)
 
-                    let document = API.NewAPITestDescriptorDocument(
+                    let document = API.CreateAPITestDescriptorDocument(
                         apiDescription: .none,
                         body: .init(resourceObject: testDescriptor),
                         includes: .none,
@@ -87,25 +87,10 @@ final class APIMiddlewareController {
                         host: state.host,
                         path: "/api_tests"
                     ) { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
-                        guard let primaryResources = response.body.primaryResource?.values,
-                            let includes = response.body.includes?.values else {
+                        guard let entities = response.resourceCache() else {
                                 print("failed to retrieve primary resources and includes from batch test descriptor response")
                                 store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response"))
                                 return EntityCache()
-                        }
-
-                        var entities = EntityCache()
-
-                        entities.add(primaryResources)
-                        for include in includes {
-                            switch include {
-                            case .a(let properties):
-                                entities.add(properties)
-                            case .b(let source):
-                                entities.add(source)
-                            case .c(let message):
-                                entities.add(message)
-                            }
                         }
 
                         return entities
@@ -128,25 +113,10 @@ final class APIMiddlewareController {
                             path: "/api_tests/\(request.id.rawValue.uuidString)",
                             including: includes
                         ) { (response: API.SingleAPITestDescriptorDocument) -> EntityCache in
-                            guard let primaryResource = response.body.primaryResource?.value,
-                                let includes = response.body.includes?.values else {
+                            guard let entities = response.resourceCache() else {
                                     print("failed to retrieve primary resources and includes from single test descriptor response")
                                     store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from single test descriptor response"))
                                     return EntityCache()
-                            }
-
-                            var entities = EntityCache()
-
-                            entities.add(primaryResource)
-                            for include in includes {
-                                switch include {
-                                case .a(let properties):
-                                    entities.add(properties)
-                                case .b(let source):
-                                    entities.add(source)
-                                case .c(let message):
-                                    entities.add(message)
-                                }
                             }
 
                             return entities
@@ -172,15 +142,11 @@ final class APIMiddlewareController {
                         host: state.host,
                         path: "/openapi_sources"
                     ) { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
-                        guard let primaryResources = response.body.primaryResource?.values else {
+                        guard let entities = response.resourceCache() else {
                             print("failed to retrieve primary resources from batch openapi source response")
                             store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response"))
                             return EntityCache()
                         }
-
-                        var entities = EntityCache()
-
-                        entities.add(primaryResources)
 
                         return entities
                     }
@@ -192,22 +158,10 @@ final class APIMiddlewareController {
                         path: "/api_test_properties",
                         including: ["openAPISource"]
                     ) { (response: API.BatchAPITestPropertiesDocument) -> EntityCache in
-                        guard let primaryResources = response.body.primaryResource?.values,
-                            let includes = response.body.includes?.values else {
+                        guard let entities = response.resourceCache() else {
                                 print("failed to retrieve primary resources from batch api test properties response")
                                 store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch api test properties response"))
                                 return EntityCache()
-                        }
-
-                        var entities = EntityCache()
-
-                        entities.add(primaryResources)
-
-                        for include in includes {
-                            switch include {
-                            case .a(let sources):
-                                entities.add(sources)
-                            }
                         }
 
                         return entities
@@ -286,18 +240,18 @@ extension APIMiddlewareController {
             },
                 receiveValue: { response in
                     guard let status = (response.response as? HTTPURLResponse)?.statusCode else {
-                        print("something went really wrong with request. no status code. response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                        print("something went really wrong with request to \(request.url?.absoluteString ?? "unknown url"). no status code. response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
                         return
                     }
 
                     guard status >= 200 && status < 300 else {
-                        print("request failed with status code: \(status)")
+                        print("request to \(request.url?.absoluteString ?? "unknown url") failed with status code: \(status)")
                         print("response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
                         return
                     }
 
                     guard let value = String(data: response.data, encoding: .utf8) else {
-                        print("failed to decode JSON:API response")
+                        print("failed to decode JSON:API response from \(request.url?.absoluteString ?? "unknown url")")
                         DispatchQueue.main.async {
                             store.dispatch(Toast.apiError(message: "Failed to decode plaintext response"))
                         }
@@ -372,18 +326,18 @@ extension APIMiddlewareController {
             },
                 receiveValue: { response in
                     guard let status = (response.response as? HTTPURLResponse)?.statusCode else {
-                        print("something went really wrong with request. no status code. response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                        print("something went really wrong with request to \(request.url?.absoluteString ?? "unknown url"). no status code. response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
                         return
                     }
 
                     guard status >= 200 && status < 300 else {
-                        print("request failed with status code: \(status)")
+                        print("request to \(request.url?.absoluteString ?? "unknown url") failed with status code: \(status)")
                         print("response body: \(String(data: response.data, encoding: .utf8) ?? "Not UTF8 encoded")")
                         return
                     }
 
                     guard let value = try? Self.decode(Response.self, from: response.data) else {
-                        print("failed to decode JSON:API response")
+                        print("failed to decode JSON:API response from \(request.url?.absoluteString ?? "unknown url")")
                         DispatchQueue.main.async {
                             store.dispatch(Toast.apiError(message: "Failed to decode JSON:API response"))
                         }
