@@ -687,7 +687,7 @@
 			repositoryURL = "git@github.com:mattpolzin/jsonapi-openapi-test-server.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.2.0;
+				minimumVersion = 0.3.0;
 			};
 		};
 		C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */ = {
@@ -703,7 +703,7 @@
 			repositoryURL = "git@github.com:mattpolzin/JSONAPI-ResourceStorage.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.1.0;
+				minimumVersion = 0.2.0;
 			};
 		};
 		C9E06E4324511ABD00101C04 /* XCRemoteSwiftPackageReference "Poly" */ = {

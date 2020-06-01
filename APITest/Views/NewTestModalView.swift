@@ -21,13 +21,13 @@ struct NewTestModalView: View {
     init(entityCache: EntityCache, selection: API.APITestProperties.Id? = nil, isPresented: Bool) {
 
         let existingOptions: [RequestProperties] = entityCache.testProperties.values
-            .compactMap { properties in (properties ~> \.openAPISource).materialize(from: entityCache).map { (properties, $0) } }
+            .compactMap { properties in (properties ~> \.openAPISource).materialized(from: entityCache).map { (properties, $0) } }
             .map { (properties, source) in
                 .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
         }
 
-        let selectedProperties: RequestProperties? = selection.flatMap { $0.materialize(from: entityCache) }
-            .flatMap { properties in (properties ~> \.openAPISource).materialize(from: entityCache).map { (properties, $0) } }
+        let selectedProperties: RequestProperties? = selection.flatMap { $0.materialized(from: entityCache) }
+            .flatMap { properties in (properties ~> \.openAPISource).materialized(from: entityCache).map { (properties, $0) } }
             .map { (properties, source) in
                 .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
         }

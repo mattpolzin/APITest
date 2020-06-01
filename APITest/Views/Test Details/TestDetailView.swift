@@ -127,7 +127,7 @@ struct TestDetailView: View {
                         RawTestLogView(logs: state.logs)
                     } else if state.viewing == .messages {
                         List {
-                            ForEach(sortedAndFiltered(state.messages), id: \.id) { message in
+                            ForEach(sortedAndFiltered(state.messages)) { message in
                                 MessageCellView(
                                     messageType: message.messageType,
                                     message: message.message,
@@ -165,16 +165,16 @@ extension TestDetailView {
     ) {
         self.messageTypeFilters = messageTypeFilters
         self.filterText = filterText
-        guard let test = testId?.materialize(from: entities) else {
+        guard let test = testId?.materialized(from: entities) else {
             self.state = .empty
             return
         }
-        guard let properties = (test ~> \.testProperties).materialize(from: entities),
-            let source = (properties ~> \.openAPISource).materialize(from: entities) else {
+        guard let properties = (test ~> \.testProperties).materialized(from: entities),
+            let source = (properties ~> \.openAPISource).materialized(from: entities) else {
                 self.state = .loading
                 return
         }
-        let messages = (test ~> \.messages).compactMap { $0.materialize(from: entities) }
+        let messages = (test ~> \.messages).compactMap { $0.materialized(from: entities) }
         let logs = entities.testLogs[test.id] ?? ""
 
         self.state = .populated(

@@ -46,7 +46,7 @@ struct TestListView: View {
 
     var body: some View {
         List {
-            ForEach(tests.sorted(by: API.APITestDescriptor.createdAtOrdering), id: \.id) { test in
+            ForEach(tests.sorted(by: API.APITestDescriptor.createdAtOrdering)) { test in
                 HStack {
                     // Test Creation Date/Time
                     Text(self.dateFormatter.string(from: test.createdAt))

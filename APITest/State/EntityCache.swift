@@ -67,7 +67,7 @@ extension JSONAPI.Id where
             IdentifiableType.Description.IdentifiableType.EntityRawIdType == RawType,
             IdentifiableType.Description.ResourceCacheType == EntityCache {
 
-    func materialize(from state: AppState) -> Self.IdentifiableType? {
-        return materialize(from: state.entities)
+    func materialized(from state: AppState) -> Self.IdentifiableType? {
+        return materialized(from: state.entities)
     }
 }

@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/mattpolzin/JSONAPI",
         "state": {
           "branch": null,
-          "revision": "1e2a87a2e4d52b66566d59677c75583046a7bc74",
-          "version": "4.0.0-rc.2"
+          "revision": "51cb140ebf27949d1185227e3eaef5a54d9a3bee",
+          "version": "4.0.0"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/mattpolzin/JSONAPI-OpenAPI",
         "state": {
           "branch": null,
-          "revision": "ffdd09e817d12b647b55c00c52aa8922a3df4432",
-          "version": "0.18.2"
+          "revision": "56a94a69ab8b7fb3f6134b35b08ca64139614f4c",
+          "version": "0.19.0"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "git@github.com:mattpolzin/jsonapi-openapi-test-server.git",
         "state": {
           "branch": null,
-          "revision": "f00d159c2bbcf214e2cffc51dfbb32686c8170da",
-          "version": "0.2.0"
+          "revision": "10c8aab1b2b0a97e30064c19150206c1db447086",
+          "version": "0.3.0"
         }
       },
       {
@@ -96,8 +96,8 @@
         "repositoryURL": "git@github.com:mattpolzin/JSONAPI-ResourceStorage.git",
         "state": {
           "branch": null,
-          "revision": "ac2dcee73da5b66807d9dc4a64632f8cf88c2075",
-          "version": "0.1.1"
+          "revision": "08f498d86f26025fd56a75756a256570ca7d0bb6",
+          "version": "0.2.1"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/mattpolzin/JSONAPIViz",
         "state": {
           "branch": null,
-          "revision": "578000fd8a2f16bcb24c964bec3bea61f078a62a",
-          "version": "0.0.3"
+          "revision": "95b14e304459038ae63a7c3518abf5ea390cdee8",
+          "version": "0.0.5"
         }
       },
       {
@@ -116,6 +116,15 @@
           "branch": null,
           "revision": "b1b2ad648ca983bd012391ad61d3ab246a104836",
           "version": "1.1.0"
+        }
+      },
+      {
+        "package": "OpenAPIReflection",
+        "repositoryURL": "https://github.com/mattpolzin/OpenAPIReflection",
+        "state": {
+          "branch": null,
+          "revision": "34eb557d0ab49a95d3a39e7a821fcb12ff50ba8a",
+          "version": "0.3.0"
         }
       },
       {
