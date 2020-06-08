@@ -116,7 +116,7 @@ extension AppState {
 
 extension AppState {
     enum Modal: Equatable {
-        case newTest
+        case newTest(NewTestModalState)
 
         var isNewTest: Bool {
             guard case .newTest = self else {
@@ -124,6 +124,20 @@ extension AppState {
             }
             return true
         }
+
+        var newTestState: NewTestModalState? {
+            guard case .newTest(let newTestState) = self else {
+                return nil
+            }
+            return newTestState
+        }
+    }
+}
+
+extension AppState.Modal {
+    enum NewTestModalState: Equatable {
+        case selectSource
+        case newSource
     }
 }
 
@@ -136,10 +150,16 @@ extension AppState {
             state.entities.merge(with: entities)
             return state
         case .open as NewTest:
-            state.takeover = .modal(.newTest)
+            state.takeover = .modal(.newTest(.selectSource))
             return state
         case .dismiss as NewTest:
             state.takeover = .none
+            return state
+        case .newSource as NewTest:
+            state.takeover = .modal(.newTest(.newSource))
+            return state
+        case .cancelNewSource as NewTest:
+            state.takeover = .modal(.newTest(.selectSource))
             return state
         case .toggleOpen as Settings:
             if let editor = state.takeover.settingsEditor {

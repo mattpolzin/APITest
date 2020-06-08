@@ -50,7 +50,7 @@ struct TestListView: View {
                 HStack {
                     // Test Creation Date/Time
                     Text(self.dateFormatter.string(from: test.createdAt))
-                        .frame(minWidth: 220, alignment: .leading)
+                        .frame(minWidth: 230, alignment: .leading)
                     Spacer()
                     // Test Status
                     Text(test.status.rawValue)

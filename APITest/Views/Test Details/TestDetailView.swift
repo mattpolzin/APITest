@@ -26,6 +26,7 @@ struct TestDetailView: View {
         struct Populated: Equatable {
             let test: API.APITestDescriptor
             let source: API.OpenAPISource
+            let hostOverride: URL?
             let messages: [API.APITestMessage]
             let logs: String
             let viewing: TestDetailsHeaderView.Viewing
@@ -117,7 +118,7 @@ struct TestDetailView: View {
             ).padding(.top, 10).padding(.bottom, 5)
 
             // source subheader
-            Text(state.populatedValues.map { "OpenAPI Source: \($0.source.uri)" } ?? "").font(.subheadline)
+            Text(state.populatedValues.map { "OpenAPI Source: \($0.source.uri) (API Host: \($0.hostOverride?.absoluteString ?? "default"))" } ?? "").font(.subheadline)
                 .padding(.bottom, 5)
 
             // details
@@ -181,6 +182,7 @@ extension TestDetailView {
             .init(
                 test: test,
                 source: source,
+                hostOverride: properties.apiHostOverride,
                 messages: messages,
                 logs: logs,
                 viewing: viewing

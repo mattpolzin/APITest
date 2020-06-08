@@ -91,7 +91,7 @@ struct ContentView: View {
                     TestListView(
                         tests: Array(entities.tests.values),
                         selectedTestId: state.selectedTestId
-                    ).frame(width: 330)
+                    ).frame(width: 340)
                     TestDetailView(
                         forTestId: state.selectedTestId,
                         in: state.entities,
@@ -105,7 +105,7 @@ struct ContentView: View {
                     TestListView(
                         tests: Array(entities.tests.values),
                         selectedTestId: state.selectedTestId
-                    ).frame(width: 330)
+                    ).frame(width: 340)
                     TestDetailView(
                         forTestId: state.selectedTestId,
                         in: state.entities,
@@ -134,7 +134,7 @@ extension ContentView {
                     NewTestModalView(
                         entityCache: entities,
                         selection: state.recentlyUsedProperties,
-                        isPresented: state.takeover.modal?.isNewTest ?? false
+                        newTestState: state.takeover.modal?.newTestState
                     )
                     Spacer().frame(maxHeight: .infinity)
                 }

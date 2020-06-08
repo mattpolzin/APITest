@@ -21,6 +21,8 @@ extension API.APITestDescriptor {
 enum NewTest: ReSwift.Action {
     case open
     case dismiss
+    case newSource
+    case cancelNewSource
 }
 
 enum Toggle: ReSwift.Action {
