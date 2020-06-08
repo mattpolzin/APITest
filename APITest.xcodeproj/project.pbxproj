@@ -10,7 +10,8 @@
 		C900B21E243EA5C600D14F69 /* ObservableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C900B21D243EA5C600D14F69 /* ObservableState.swift */; };
 		C900B221243EAD4E00D14F69 /* ReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C900B220243EAD4E00D14F69 /* ReSwift */; };
 		C917CF34243EA15500C54CE2 /* TestServerModels in Frameworks */ = {isa = PBXBuildFile; productRef = C917CF33243EA15500C54CE2 /* TestServerModels */; };
-		C939EE50248DBC7400873D8F /* NewTestSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE4F248DBC7400873D8F /* NewTestSourceView.swift */; };
+		C939EE50248DBC7400873D8F /* NewTestCreateSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */; };
+		C939EE52248DFC7200873D8F /* NewTestSelectSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */; };
 		C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9409AE8244105B1008945FB /* APITestWatcherController.swift */; };
 		C9409AEC2441068B008945FB /* WebSocketKit in Frameworks */ = {isa = PBXBuildFile; productRef = C9409AEB2441068B008945FB /* WebSocketKit */; };
 		C95AA6BE243ED7F600BA95E7 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AA6BD243ED7F600BA95E7 /* AppState.swift */; };
@@ -59,7 +60,8 @@
 
 /* Begin PBXFileReference section */
 		C900B21D243EA5C600D14F69 /* ObservableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableState.swift; sourceTree = "<group>"; };
-		C939EE4F248DBC7400873D8F /* NewTestSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestSourceView.swift; sourceTree = "<group>"; };
+		C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestCreateSourceView.swift; sourceTree = "<group>"; };
+		C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestSelectSourceView.swift; sourceTree = "<group>"; };
 		C9409AE8244105B1008945FB /* APITestWatcherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITestWatcherController.swift; sourceTree = "<group>"; };
 		C95AA6BD243ED7F600BA95E7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C95AA6BF243EDA1700BA95E7 /* EntityCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityCache.swift; sourceTree = "<group>"; };
@@ -125,7 +127,8 @@
 			isa = PBXGroup;
 			children = (
 				C9CD2C0B24454428001A3091 /* NewTestModalView.swift */,
-				C939EE4F248DBC7400873D8F /* NewTestSourceView.swift */,
+				C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */,
+				C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */,
 			);
 			path = "New Test";
 			sourceTree = "<group>";
@@ -414,11 +417,12 @@
 				C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */,
 				C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */,
 				C966241F243E28E5005D08F4 /* ContentView.swift in Sources */,
+				C939EE52248DFC7200873D8F /* NewTestSelectSourceView.swift in Sources */,
 				C99F921C2442C22C000DD436 /* AppActions.swift in Sources */,
 				C9F6CB78244BF97000945FBF /* URLStringValidator.swift in Sources */,
 				C9AB419C2454DE3600B50FA4 /* TestDetailsHeaderView.swift in Sources */,
 				C9AB41962454DC2300B50FA4 /* MessageCellView.swift in Sources */,
-				C939EE50248DBC7400873D8F /* NewTestSourceView.swift in Sources */,
+				C939EE50248DBC7400873D8F /* NewTestCreateSourceView.swift in Sources */,
 				C96A3D2024510F3E00DC3D65 /* Config.swift in Sources */,
 				C9F6CB7C244C299D00945FBF /* ToastMiddlewareController.swift in Sources */,
 				C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */,

@@ -12,9 +12,18 @@ import APIModels
 import JSONAPI
 import ReSwift
 
-struct NewTestModalView: View {
+struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
 
-    @State private var selectedProperties: RequestProperties = .default
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+struct NewTestModalView: View {
+    @State private var selectedProperties: NewTestModalView.RequestProperties = .default
+    @State private var size: CGSize = .zero
+
     let isPresented: Bool
     let creatingNewSource: Bool
 
@@ -66,47 +75,18 @@ struct NewTestModalView: View {
             if isPresented {
                 ZStack {
                     if creatingNewSource {
-                        NewTestSourceView()
+                        NewTestCreateSourceView()
+                            .frame(width: self.size.width, height: self.size.height)
                             .rotation3DEffect(Angle(degrees: -180), axis: (x: 0, y: 1, z: 0))
                     } else {
-                        VStack {
-                            Text("New Test").font(.title)
-                            List {
-                                ForEach(propertiesOptions) { properties in
-                                    ZStack(alignment: .center) {
-                                        Rectangle().fill(properties == self.selectedProperties ? Color.accentColor : Color.clear)
-                                        HStack { ForEach(0..<properties.textViews.count) { properties.textViews[$0] } }
-                                    }.contentShape(Rectangle())
-                                    .onTapGesture { self.selectedProperties = properties }
-                                    .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                                }
-                            }
-                            HStack {
-                                StandardButton(
-                                    action: { store.dispatch(NewTest.dismiss) },
-                                    label: "Cancel"
-                                )
-
-                                StandardButton(
-                                    action: {
-                                        for action in self.selectedProperties.actions {
-                                            store.dispatch(action)
-                                        }
-                                    },
-                                    label: "Start"
-                                )
-                            }.padding(.top, 5)
-                        }.padding(10)
-                         .background(
-                            RoundedRectangle(cornerRadius: 3).fill(Color(.secondarySystemBackground))
-                                .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.secondary))
-                                .shadow(radius: 1)
-                        )
+                        NewTestSelectSourceView(propertiesOptions: self.propertiesOptions, selectedProperties: $selectedProperties)
+                            .onPreferenceChange(SizePreferenceKey.self, perform: { self.size = $0 })
                     }
                 }.rotation3DEffect(creatingNewSource ? Angle(degrees: 180): Angle(degrees: 0), axis: (x: 0, y: 1, z: 0))
                     .animation(.default, value: creatingNewSource)
             }
-        }.animation(.easeInOut(duration: 0.05))
+        }.transition(.opacity)
+        .animation(.easeInOut(duration: 0.1), value: isPresented)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  NewTestSourceView.swift
+//  NewTestCreateSourceView.swift
 //  APITest
 //
 //  Created by Mathew Polzin on 6/7/20.
@@ -11,10 +11,12 @@ import SwiftUI
 import ReSwift
 import APIModels
 
-struct NewTestSourceView: View {
+struct NewTestCreateSourceView: View {
+    
     var body: some View {
         VStack {
             Text("New Test").font(.title)
+            Spacer()
             HStack {
                 StandardButton(
                     action: { store.dispatch(NewTest.cancelNewSource) },
@@ -31,6 +33,7 @@ struct NewTestSourceView: View {
                 )
             }.padding(.top, 5)
         }.padding(10)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .background(
                 RoundedRectangle(cornerRadius: 3).fill(Color(.secondarySystemBackground))
                     .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.secondary))
