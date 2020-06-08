@@ -19,3 +19,17 @@ enum URLStringValidator: Validator {
         return true
     }
 }
+
+enum OptionalURLStringValidator: Validator {
+    static func isValid(_ value: String?) -> Bool {
+        guard let value = value else { return true }
+        
+        guard let urlComponents = URLComponents(string: value) else {
+            return false
+        }
+        guard urlComponents.scheme != nil, urlComponents.host != nil else {
+            return false
+        }
+        return true
+    }
+}

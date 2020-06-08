@@ -22,7 +22,7 @@ struct SearchTextField: View {
 
     var body: some View {
         ZStack {
-            TextField("Filter", text: self.filter)
+            SwiftUI.TextField("Filter", text: self.filter)
             .padding([.top, .bottom], 5).padding([.leading, .trailing], 10)
             .overlay(
                 RoundedRectangle(cornerRadius: 20)

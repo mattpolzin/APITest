@@ -24,8 +24,7 @@ struct NewTestModalView: View {
     @State private var selectedProperties: NewTestModalView.RequestProperties = .default
     @State private var size: CGSize = .zero
 
-    let isPresented: Bool
-    let creatingNewSource: Bool
+    let newTestState: AppState.Modal.NewTestModalState?
 
     let propertiesOptions: [RequestProperties]
 
@@ -59,34 +58,32 @@ struct NewTestModalView: View {
         selection: RequestProperties? = nil,
         newTestState: AppState.Modal.NewTestModalState?
     ) {
+        self.newTestState = newTestState
         self.propertiesOptions = properties
-        if let newTestState = newTestState {
-            self.isPresented = true
-            self.creatingNewSource = newTestState == .newSource
-        } else {
-            self.isPresented = false
-            self.creatingNewSource = false
-        }
         self.selectedProperties = selection ?? .default
     }
 
     var body: some View {
         ZStack {
-            if isPresented {
+            self.newTestState.map { testState in
                 ZStack {
-                    if creatingNewSource {
-                        NewTestCreateSourceView()
+                    testState.newSourceState.map { newSourceState in
+                        NewTestCreateSourceView(
+                            openAPISourceUri: newSourceState.openAPISourceUri,
+                            serverHostOverride: newSourceState.serverHostOverride.flatMap(URL.init(string:))
+                        )
                             .frame(width: self.size.width, height: self.size.height)
                             .rotation3DEffect(Angle(degrees: -180), axis: (x: 0, y: 1, z: 0))
-                    } else {
+                    }
+                    if !testState.isNewSource {
                         NewTestSelectSourceView(propertiesOptions: self.propertiesOptions, selectedProperties: $selectedProperties)
                             .onPreferenceChange(SizePreferenceKey.self, perform: { self.size = $0 })
                     }
-                }.rotation3DEffect(creatingNewSource ? Angle(degrees: 180): Angle(degrees: 0), axis: (x: 0, y: 1, z: 0))
-                    .animation(.default, value: creatingNewSource)
+                }.rotation3DEffect(testState.isNewSource ? Angle(degrees: 180): Angle(degrees: 0), axis: (x: 0, y: 1, z: 0))
+                    .animation(.default, value: testState.isNewSource)
             }
         }.transition(.opacity)
-        .animation(.easeInOut(duration: 0.1), value: isPresented)
+        .animation(.easeInOut(duration: 0.1), value: newTestState != nil)
     }
 }
 

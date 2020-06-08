@@ -30,13 +30,7 @@ struct SettingsView: View {
                             Text("API Test Service Host:").padding(.bottom, 4)
                             Text("The host of the API Testing Service, not the service being tested.").italic().font(.footnote).padding(.bottom, 5)
                             HStack {
-                                TextField("Host", text: self.host)
-                                .padding(5)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(settingsEditorState.$host.isValid ? Color.secondary : Color.red, lineWidth: 2)
-                                        .animation(nil, value: settingsEditorState.$host.isValid)
-                                )
+                                TextField(title: "Host", value: self.host, isValid: settingsEditorState.$host.isValid)
                             }
                         }.padding([.leading, .trailing], 12)
                         Spacer()

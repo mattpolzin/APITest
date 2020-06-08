@@ -137,7 +137,36 @@ extension AppState {
 extension AppState.Modal {
     enum NewTestModalState: Equatable {
         case selectSource
-        case newSource
+        case newSource(NewSourceState)
+
+        struct NewSourceState: Equatable {
+            var openAPISourceUri: String
+
+            @Validated<OptionalURLStringValidator>
+            var serverHostOverride: String?
+
+            func with(source: String) -> Self {
+                return .init(openAPISourceUri: source, serverHostOverride: self.serverHostOverride)
+            }
+
+            func with(serverHostOverride: String?) -> Self {
+                return .init(openAPISourceUri: self.openAPISourceUri, serverHostOverride: serverHostOverride)
+            }
+        }
+
+        var isNewSource: Bool {
+            guard case .newSource = self else {
+                return false
+            }
+            return true
+        }
+
+        var newSourceState: NewSourceState? {
+            guard case .newSource(let state) = self else {
+                return nil
+            }
+            return state
+        }
     }
 }
 
@@ -156,10 +185,24 @@ extension AppState {
             state.takeover = .none
             return state
         case .newSource as NewTest:
-            state.takeover = .modal(.newTest(.newSource))
+            state.takeover = .modal(.newTest(.newSource(.init(openAPISourceUri: "", serverHostOverride: nil))))
             return state
         case .cancelNewSource as NewTest:
             state.takeover = .modal(.newTest(.selectSource))
+            return state
+        case .changeSourceUri(let uri) as NewTest:
+            guard let currentSource = state.takeover.modal?.newTestState?.newSourceState else {
+                // invariante failure?
+                return state
+            }
+            state.takeover = .modal(.newTest(.newSource(currentSource.with(source: uri))))
+            return state
+        case .changeServerOverride(let server) as NewTest:
+            guard let currentSource = state.takeover.modal?.newTestState?.newSourceState else {
+                // invariant failure?
+                return state
+            }
+            state.takeover = .modal(.newTest(.newSource(currentSource.with(serverHostOverride: server))))
             return state
         case .toggleOpen as Settings:
             if let editor = state.takeover.settingsEditor {

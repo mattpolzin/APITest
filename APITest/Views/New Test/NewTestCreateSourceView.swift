@@ -12,10 +12,36 @@ import ReSwift
 import APIModels
 
 struct NewTestCreateSourceView: View {
-    
+
+    let openAPISourceUri: String
+    let serverHostOverride: URL?
+
+    var openAPISource: Binding<String> {
+        Binding(
+            get: { self.openAPISourceUri },
+            set: { store.dispatch(NewTest.changeSourceUri($0)) }
+        )
+    }
+
+    var serverHost: Binding<String> {
+        Binding(
+            get: { self.serverHostOverride?.absoluteString ?? "" },
+            set: { newValue in
+                guard newValue.count > 0 else {
+                    store.dispatch(NewTest.changeServerOverride(nil))
+                    return
+                }
+                store.dispatch(NewTest.changeServerOverride(newValue))
+            }
+        )
+    }
+
     var body: some View {
         VStack {
             Text("New Test").font(.title)
+            Spacer()
+            TextField(title: "OpenAPI Source", value: self.openAPISource, isValid: true) // TODO: invalidate for bad values
+            TextField(title: "API Server Override", value: self.serverHost, isValid: true) // TODO: invalidate for bad values
             Spacer()
             HStack {
                 StandardButton(
@@ -25,8 +51,7 @@ struct NewTestCreateSourceView: View {
 
                 StandardButton(
                     action: {
-                        // TODO: fill out uri and host override
-                        store.dispatch(API.StartTest.request(.new(uri: "", apiHostOverride: nil)))
+                        store.dispatch(API.StartTest.request(.new(uri: self.openAPISourceUri, apiHostOverride: self.serverHostOverride)))
                         store.dispatch(NewTest.dismiss)
                 },
                     label: "Start"
