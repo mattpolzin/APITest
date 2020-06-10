@@ -51,18 +51,91 @@ final class APIMiddlewareController {
                         relationships = .init()
                     case .existing(id: let propertiesId):
                         relationships = .init(testProperties: .init(id: propertiesId))
-                    case .new(uri: let uri):
-                        fatalError("unimplemented API call for a new OpenAPISource with uri \(uri)")
+                    case .new(uri: let uri, apiHostOverride: let apiHostOverride):
+                        let sourceType: API.SourceType
+                        if URL(string: uri)?.host != nil {
+                            sourceType = .url
+                        } else {
+                            sourceType = .filepath
+                        }
+                        let source = API.NewOpenAPISource(
+                            attributes: .init(
+                                createdAt: Date(),
+                                uri: uri,
+                                sourceType: sourceType
+                            ),
+                            relationships: .none,
+                            meta: .none,
+                            links: .none
+                        )
+                        let document = API.CreateOpenAPISourceDocument(
+                            body: .init(resourceObject: source)
+                        )
+
+                        // super gross nesting here.
+                        // TODO: this whole thing should be flattened
+                        // out by refactoring the `jsonApiRequest` methods.
+                        do {
+                            try self.jsonApiRequest(
+                                .post,
+                                host: state.host,
+                                path: "/openapi_sources",
+                                body: document
+                            ) { (response: API.SingleOpenAPISourceDocument) in
+
+                                guard let entities = response.resourceCache(),
+                                    let source = response.body.primaryResource?.value else {
+                                    print("failed to start tests with a new OpenAPI source")
+                                    return EntityCache()
+                                }
+
+                                let properties = API.NewAPITestProperties(
+                                    attributes: .init(apiHostOverride: apiHostOverride),
+                                    relationships: .init(openAPISource: .init(resourceObject: source)),
+                                    meta: .none,
+                                    links: .none
+                                )
+
+                                let document = API.CreateAPITestPropertiesDocument(
+                                    body: .init(resourceObject: properties)
+                                )
+
+                                do {
+                                    try self.jsonApiRequest(
+                                        .post,
+                                        host: state.host,
+                                        path: "/api_test_properties",
+                                        body: document
+                                    ) { (response: API.SingleAPITestPropertiesDocument) in
+                                        guard let entities = response.resourceCache(),
+                                            let properties = response.body.primaryResource?.value else {
+                                                print("failed to start tests with a new OpenAPI source")
+                                                return EntityCache()
+                                        }
+
+                                        DispatchQueue.main.async {
+                                            store.dispatch(API.StartTest.request(.existing(id: properties.id)))
+                                        }
+
+                                        return entities
+                                    }
+                                } catch {
+                                    print("Failure to send request: \(error)")
+                                }
+
+                                return entities
+                            }
+                        } catch {
+                            store.dispatch(Toast.apiError(message: "Failed to start a new test run with a new OpenAPI source"))
+                            print("Failure to send request: \(error)")
+                        }
+                        return
                     }
 
                     let testDescriptor = API.NewAPITestDescriptor(attributes: .none, relationships: relationships, meta: .none, links: .none)
 
                     let document = API.CreateAPITestDescriptorDocument(
-                        apiDescription: .none,
-                        body: .init(resourceObject: testDescriptor),
-                        includes: .none,
-                        meta: .none,
-                        links: .none
+                        body: .init(resourceObject: testDescriptor)
                     )
 
                     do {

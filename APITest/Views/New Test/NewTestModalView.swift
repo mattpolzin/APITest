@@ -73,13 +73,13 @@ struct NewTestModalView: View {
                             serverHostOverride: newSourceState.serverHostOverride.flatMap(URL.init(string:))
                         )
                             .frame(width: self.size.width, height: self.size.height)
-                            .rotation3DEffect(Angle(degrees: -180), axis: (x: 0, y: 1, z: 0))
+                            .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
                     }
                     if !testState.isNewSource {
                         NewTestSelectSourceView(propertiesOptions: self.propertiesOptions, selectedProperties: $selectedProperties)
                             .onPreferenceChange(SizePreferenceKey.self, perform: { self.size = $0 })
                     }
-                }.rotation3DEffect(testState.isNewSource ? Angle(degrees: 180): Angle(degrees: 0), axis: (x: 0, y: 1, z: 0))
+                }.rotation3DEffect(testState.isNewSource ? Angle(degrees: -180): Angle(degrees: 0), axis: (x: 0, y: 1, z: 0))
                     .animation(.default, value: testState.isNewSource)
             }
         }.transition(.opacity)
