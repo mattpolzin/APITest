@@ -13,13 +13,19 @@ import APIModels
 
 struct NewTestCreateSourceView: View {
 
-    let openAPISourceUri: String
+    let openAPISourceUri: String?
     let serverHostOverride: URL?
 
     var openAPISource: Binding<String> {
         Binding(
-            get: { self.openAPISourceUri },
-            set: { store.dispatch(NewTest.changeSourceUri($0)) }
+            get: { self.openAPISourceUri ?? "" },
+            set: { newValue in
+                guard newValue.count > 0 else {
+                    store.dispatch(NewTest.changeSourceUri(nil))
+                    return
+                }
+                store.dispatch(NewTest.changeSourceUri(newValue))
+            }
         )
     }
 
@@ -40,8 +46,8 @@ struct NewTestCreateSourceView: View {
         VStack {
             Text("New Test").font(.title)
             Spacer()
-            TextField(title: "OpenAPI Source", value: self.openAPISource, isValid: true) // TODO: invalidate for bad values
-            TextField(title: "API Server Override", value: self.serverHost, isValid: true) // TODO: invalidate for bad values
+            TextField(title: "OpenAPI Source (leave blank for default)", value: self.openAPISource, isValid: true) // TODO: invalidate for bad values
+            TextField(title: "API Server Override (leave blank to use documented source)", value: self.serverHost, isValid: true) // TODO: invalidate for bad values
             Spacer()
             HStack {
                 StandardButton(

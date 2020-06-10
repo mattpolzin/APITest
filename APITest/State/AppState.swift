@@ -140,12 +140,12 @@ extension AppState.Modal {
         case newSource(NewSourceState)
 
         struct NewSourceState: Equatable {
-            var openAPISourceUri: String
+            var openAPISourceUri: String?
 
             @Validated<OptionalURLStringValidator>
             var serverHostOverride: String?
 
-            func with(source: String) -> Self {
+            func with(source: String?) -> Self {
                 return .init(openAPISourceUri: source, serverHostOverride: self.serverHostOverride)
             }
 

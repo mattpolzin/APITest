@@ -24,7 +24,7 @@ struct NewTestSelectSourceView: View {
                         ForEach(self.propertiesOptions) { properties in
                             ZStack(alignment: .center) {
                                 Rectangle().fill(properties == self.selectedProperties ? Color.accentColor : Color.clear)
-                                HStack { ForEach(0..<properties.textViews.count) { properties.textViews[$0] } }
+                                HStack(spacing: 0) { ForEach(0..<properties.textViews.count) { properties.textViews[$0] } }
                             }.contentShape(Rectangle())
                                 .onTapGesture { self.selectedProperties = properties }
                                 .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))

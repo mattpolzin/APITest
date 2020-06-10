@@ -22,7 +22,7 @@ enum NewTest: ReSwift.Action {
     case open
     case dismiss
     case newSource
-    case changeSourceUri(String)
+    case changeSourceUri(String?)
     case changeServerOverride(String?)
     case cancelNewSource
 }

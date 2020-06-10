@@ -52,6 +52,15 @@ final class APIMiddlewareController {
                     case .existing(id: let propertiesId):
                         relationships = .init(testProperties: .init(id: propertiesId))
                     case .new(uri: let uri, apiHostOverride: let apiHostOverride):
+                        guard let uri = uri else {
+                            self.startTestWithNewProperties(
+                                openAPISource: nil,
+                                apiHostOverride: apiHostOverride,
+                                state: state
+                            )
+                            return
+                        }
+
                         let sourceType: API.SourceType
                         if URL(string: uri)?.host != nil {
                             sourceType = .url
@@ -89,39 +98,11 @@ final class APIMiddlewareController {
                                     return EntityCache()
                                 }
 
-                                let properties = API.NewAPITestProperties(
-                                    attributes: .init(apiHostOverride: apiHostOverride),
-                                    relationships: .init(openAPISource: .init(resourceObject: source)),
-                                    meta: .none,
-                                    links: .none
+                                self.startTestWithNewProperties(
+                                    openAPISource: source,
+                                    apiHostOverride: apiHostOverride,
+                                    state: state
                                 )
-
-                                let document = API.CreateAPITestPropertiesDocument(
-                                    body: .init(resourceObject: properties)
-                                )
-
-                                do {
-                                    try self.jsonApiRequest(
-                                        .post,
-                                        host: state.host,
-                                        path: "/api_test_properties",
-                                        body: document
-                                    ) { (response: API.SingleAPITestPropertiesDocument) in
-                                        guard let entities = response.resourceCache(),
-                                            let properties = response.body.primaryResource?.value else {
-                                                print("failed to start tests with a new OpenAPI source")
-                                                return EntityCache()
-                                        }
-
-                                        DispatchQueue.main.async {
-                                            store.dispatch(API.StartTest.request(.existing(id: properties.id)))
-                                        }
-
-                                        return entities
-                                    }
-                                } catch {
-                                    print("Failure to send request: \(error)")
-                                }
 
                                 return entities
                             }
@@ -434,5 +415,50 @@ extension APIMiddlewareController {
         case post = "POST"
         case put = "PUT"
         case delete = "DELETE"
+    }
+}
+
+extension APIMiddlewareController {
+
+    /// make a request to create test properties with the given
+    /// OpenAPI source and host override.
+    ///
+    /// In both cases `nil` is allowed. A `nil` override is
+    /// "don't override" and a `nil` source is the default source
+    /// for the server if one is defined.
+    func startTestWithNewProperties(openAPISource source: API.OpenAPISource?, apiHostOverride: URL?, state: AppState) {
+        let properties = API.NewAPITestProperties(
+            attributes: .init(apiHostOverride: apiHostOverride),
+            relationships: .init(openAPISource: source.map { .init(resourceObject: $0) }),
+            meta: .none,
+            links: .none
+        )
+
+        let document = API.CreateAPITestPropertiesDocument(
+            body: .init(resourceObject: properties)
+        )
+
+        do {
+            try self.jsonApiRequest(
+                .post,
+                host: state.host,
+                path: "/api_test_properties",
+                body: document
+            ) { (response: API.SingleAPITestPropertiesDocument) in
+                guard let entities = response.resourceCache(),
+                    let properties = response.body.primaryResource?.value else {
+                        print("failed to start tests with a new OpenAPI source")
+                        return EntityCache()
+                }
+
+                DispatchQueue.main.async {
+                    store.dispatch(API.StartTest.request(.existing(id: properties.id)))
+                }
+
+                return entities
+            }
+        } catch {
+            print("Failure to send request: \(error)")
+        }
     }
 }
