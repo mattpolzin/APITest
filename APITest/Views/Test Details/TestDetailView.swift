@@ -81,6 +81,8 @@ struct TestDetailView: View {
     /// Apply both the message type and text filters.
     func messageFilter(_ message: API.APITestMessage) -> Bool {
         let allowedMessageTypes: [API.MessageType] = [
+            .debug,
+            .info,
             messageTypeFilters.showSuccessMessages ? .success : nil,
             messageTypeFilters.showWarningMessages ? .warning : nil,
             messageTypeFilters.showErrorMessages ? .error : nil
