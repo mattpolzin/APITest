@@ -81,6 +81,29 @@ final class APIMiddlewareController {
                             body: .init(resourceObject: source)
                         )
 
+                        let r1 = try! APIRequest(
+                            .post,
+                            host: state.host,
+                            path: "/openapi_sources",
+                            body: document,
+                            responseType: API.SingleOpenAPISourceDocument.self
+                        )
+                        .publish
+                        // TODO: figure out how I want to publish entities to the store
+                        //  in between response and chained request.
+                        .transform(
+                            .post,
+                            host: state.host,
+                            path: "api_test_properties",
+                            requestBodyConstructor: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
+                            responseType: API.SingleAPITestPropertiesDocument.self
+                        )
+                        // TODO: figure out how I want to publish entities to the store
+                        //  in between response and chained action.
+                        // TODO: dispatch the next action in chain --
+                        //  store.dispatch(API.StartTest.request(.existing(id: properties.id)))
+
+
                         // super gross nesting here.
                         // TODO: this whole thing should be flattened
                         // out by refactoring the `jsonApiRequest` methods.
@@ -409,13 +432,6 @@ extension APIMiddlewareController {
 
         return inFlightRequest
     }
-
-    enum HttpVerb: String, Equatable {
-        case get = "GET"
-        case post = "POST"
-        case put = "PUT"
-        case delete = "DELETE"
-    }
 }
 
 extension APIMiddlewareController {
@@ -461,4 +477,170 @@ extension APIMiddlewareController {
             print("Failure to send request: \(error)")
         }
     }
+}
+
+
+
+
+enum HttpVerb: String, Equatable {
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
+}
+
+struct APIRequest<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument> {
+    let method: HttpVerb
+    let url: URL
+    let bodyData: Data?
+
+    var publish: Publishers.Decode<Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Response, JSONDecoder> {
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.httpBody = bodyData
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        return URLSession.shared.dataTaskPublisher(for: request)
+            .tryMap { (data, response) in
+                guard let status = (response as? HTTPURLResponse)?.statusCode else {
+                    print("something went really wrong with request to \(request.url?.absoluteString ?? "unknown url"). no status code. response body: \(String(data: data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                    throw RequestFailure.unknown("something went really wrong with request to \(request.url?.absoluteString ?? "unknown url"). no status code. response body: \(String(data: data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                }
+
+                guard status >= 200 && status < 300 else {
+                    print("request to \(request.url?.absoluteString ?? "unknown url") failed with status code: \(status)")
+                    print("response body: \(String(data: data, encoding: .utf8) ?? "Not UTF8 encoded")")
+                    throw URLError(.init(rawValue: status))
+                }
+
+                return data
+            }
+            .decode(type: Response.self, decoder: APIMiddlewareController.decoder)
+    }
+}
+
+extension APIRequest {
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        body: Request,
+        including includes: [String] = [],
+        responseType: Response.Type
+    ) throws {
+        self.method = method
+        self.bodyData = try APIMiddlewareController.encoder
+            .encode(body)
+
+        var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
+
+        urlComponents.path = path
+        if includes.count > 0 {
+            urlComponents.queryItems = [.init(name: "include", value: includes.joined(separator: ","))]
+        }
+
+        guard let url = urlComponents.url else {
+            throw RequestFailure.urlConstruction(String(describing: urlComponents))
+        }
+        self.url = url
+    }
+
+    static func transformation<Other: EncodableJSONAPIDocument>(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        including includes: [String] = [],
+        requestBodyConstructor: @escaping (Other) throws -> Request,
+        responseType: Response.Type
+    ) -> (Other) throws -> APIRequest {
+        return { existingDocument in
+            try APIRequest(
+                method,
+                host: host,
+                path: path,
+                body: try requestBodyConstructor(existingDocument),
+                including: includes,
+                responseType: responseType
+            )
+        }
+    }
+}
+
+extension Publishers.Decode where Upstream == Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Coder == JSONDecoder, Output: EncodableJSONAPIDocument {
+
+    func transform<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument>(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        including includes: [String] = [],
+        requestBodyConstructor: @escaping (Output) throws -> Request,
+        responseType: Response.Type
+    ) -> Publishers.FlatMap<
+            Publishers.Decode<
+                Publishers.TryMap<
+                    URLSession.DataTaskPublisher,
+                    JSONDecoder.Input
+                >,
+                Response,
+                JSONDecoder
+            >,
+            Publishers.TryMap<
+                Publishers.Decode<
+                    Publishers.TryMap<
+                        URLSession.DataTaskPublisher,
+                        JSONDecoder.Input
+                    >,
+                    Output,
+                    JSONDecoder
+                >,
+                APIRequest<
+                    Request,
+                    Response
+                >
+            >
+        > {
+        self.tryMap(
+            APIRequest.transformation(
+                method,
+                host: host,
+                path: path,
+                including: includes,
+                requestBodyConstructor: requestBodyConstructor,
+                responseType: responseType
+            )
+        )
+        .flatMap { $0.publish }
+    }
+}
+
+extension API {
+    /// make a request document to create test properties with the given
+    /// OpenAPI source and host override.
+    ///
+    /// In both cases `nil` is allowed. A `nil` override is
+    /// "don't override" and a `nil` source document means the default source
+    /// for the server if one is defined.
+    static func newPropertiesDocument(from sourceDocument: API.SingleOpenAPISourceDocument?, apiHostOverride: URL?) throws -> API.CreateAPITestPropertiesDocument {
+        let source = sourceDocument?.body.primaryResource?.value
+        if sourceDocument != nil, source == nil {
+            throw RequestFailure.missingPrimaryResource(String(describing: API.SingleOpenAPISourceDocument.self))
+        }
+        let properties = API.NewAPITestProperties(
+            attributes: .init(apiHostOverride: apiHostOverride),
+            relationships: .init(openAPISource: source.map { .init(resourceObject: $0) }),
+            meta: .none,
+            links: .none
+        )
+
+        return API.CreateAPITestPropertiesDocument(
+            body: .init(resourceObject: properties)
+        )
+    }
+}
+
+enum RequestFailure: Swift.Error {
+    case unknown(String)
+    case urlConstruction(String)
+    case missingPrimaryResource(String)
 }
