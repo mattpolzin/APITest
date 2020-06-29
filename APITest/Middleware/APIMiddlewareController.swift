@@ -57,20 +57,21 @@ final class APIMiddlewareController {
                             let newPropertiesRequest = try! APIRequest(
                                 .post,
                                 host: state.host,
-                                path: "/openapi_sources",
+                                path: "/api_test_properties",
                                 body: API.newPropertiesDocument(from: nil, apiHostOverride: apiHostOverride),
                                 responseType: API.SingleAPITestPropertiesDocument.self
                             )
-                            self.request(
+                            self.perform(
                                 newPropertiesRequest
                                     .publish
-                                    .mapEntities()
-                                    .dispatch(\.cacheAction)
-                            )
-                            self.startTestWithNewProperties(
-                                openAPISource: nil,
-                                apiHostOverride: apiHostOverride,
-                                state: state
+                                    .mapPrimaryAndEntities()
+                                    .dispatch(
+                                        \.cacheAction,
+                                        { API.StartTest.request(.existing(id: $0.primaryResource.id)) }
+                                    )
+                                    .dispatchError(
+                                        { error in (error as? RequestFailure).map { _ in Toast.apiError(message: "Failed to start a new test run") } }
+                                    )
                             )
                             return
                         }
@@ -90,58 +91,20 @@ final class APIMiddlewareController {
                             responseType: API.SingleAPITestPropertiesDocument.self
                         )
 
-                        self.request(
+                        self.perform(
                             newSourceRequest
                                 .publish
+                                .mapPrimaryAndEntities()
                                 .chain(newPropertiesRequest)
                                 .mapPrimaryAndEntities()
                                 .dispatch(
                                     \.cacheAction,
                                     { API.StartTest.request(.existing(id: $0.primaryResource.id)) }
-                            )
-                        )
-                        return
-                    case .new(uri: let uri, apiHostOverride: let apiHostOverride):
-                        guard let uri = uri else {
-                            self.startTestWithNewProperties(
-                                openAPISource: nil,
-                                apiHostOverride: apiHostOverride,
-                                state: state
-                            )
-                            return
-                        }
-
-                        let document = API.newOpenAPISourceDocument(uri: uri)
-
-                        // super gross nesting here.
-                        // TODO: this whole thing should be flattened
-                        // out by refactoring the `jsonApiRequest` methods.
-                        do {
-                            try self.jsonApiRequest(
-                                .post,
-                                host: state.host,
-                                path: "/openapi_sources",
-                                body: document
-                            ) { (response: API.SingleOpenAPISourceDocument) in
-
-                                guard let entities = response.resourceCache(),
-                                    let source = response.body.primaryResource?.value else {
-                                    print("failed to start tests with a new OpenAPI source")
-                                    return EntityCache()
-                                }
-
-                                self.startTestWithNewProperties(
-                                    openAPISource: source,
-                                    apiHostOverride: apiHostOverride,
-                                    state: state
                                 )
-
-                                return entities
-                            }
-                        } catch {
-                            store.dispatch(Toast.apiError(message: "Failed to start a new test run with a new OpenAPI source"))
-                            print("Failure to send request: \(error)")
-                        }
+                                .dispatchError(
+                                    { error in (error as? RequestFailure).map { _ in Toast.apiError(message: "Failed to start a new test run") } }
+                                )
+                        )
                         return
                     }
 
@@ -167,20 +130,21 @@ final class APIMiddlewareController {
                     }
 
                 case .request as API.GetAllTests:
-
-                    self.jsonApiRequest(
+                    let allTestsRequest = try! APIRequest(
                         .get,
                         host: state.host,
-                        path: "/api_tests"
-                    ) { (response: API.BatchAPITestDescriptorDocument) -> EntityCache in
-                        guard let entities = response.resourceCache() else {
-                                print("failed to retrieve primary resources and includes from batch test descriptor response")
-                                store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response"))
-                                return EntityCache()
-                        }
-
-                        return entities
-                    }
+                        path: "/api_tests",
+                        responseType: API.BatchAPITestDescriptorDocument.self
+                    )
+                    self.perform(
+                        allTestsRequest
+                            .publish
+                            .mapEntities()
+                            .dispatch(\.cacheAction)
+                            .dispatchError(
+                                { error in (error as? RequestFailure).flatMap { $0.isMissingPrimaryResource ? Toast.apiError(message: "Failed to retrieve primary resources and includes from batch test descriptor response") : nil } }
+                            )
+                    )
 
                 case let request as API.GetTest:
                     switch request.requestType {
@@ -445,55 +409,14 @@ extension APIMiddlewareController {
 
 extension APIMiddlewareController {
 
-    /// make a request to create test properties with the given
-    /// OpenAPI source and host override.
-    ///
-    /// In both cases `nil` is allowed. A `nil` override is
-    /// "don't override" and a `nil` source is the default source
-    /// for the server if one is defined.
-    func startTestWithNewProperties(openAPISource source: API.OpenAPISource?, apiHostOverride: URL?, state: AppState) {
-        let properties = API.NewAPITestProperties(
-            attributes: .init(apiHostOverride: apiHostOverride),
-            relationships: .init(openAPISource: source.map { .init(resourceObject: $0) }),
-            meta: .none,
-            links: .none
-        )
-
-        let document = API.CreateAPITestPropertiesDocument(
-            body: .init(resourceObject: properties)
-        )
-
-        do {
-            try self.jsonApiRequest(
-                .post,
-                host: state.host,
-                path: "/api_test_properties",
-                body: document
-            ) { (response: API.SingleAPITestPropertiesDocument) in
-                guard let entities = response.resourceCache(),
-                    let properties = response.body.primaryResource?.value else {
-                        print("failed to start tests with a new OpenAPI source")
-                        return EntityCache()
-                }
-
-                DispatchQueue.main.async {
-                    store.dispatch(API.StartTest.request(.existing(id: properties.id)))
-                }
-
-                return entities
-            }
-        } catch {
-            print("Failure to send request: \(error)")
-        }
-    }
-
-    func request<RequestPublisher: Publisher>(_ publisher: RequestPublisher) where RequestPublisher.Output == ReSwift.Action {
+    /// Performs some published task that results in
+    /// Actions and subscribes the Store to that
+    /// publisher.
+    func perform<RequestPublisher: Publisher>(_ publisher: RequestPublisher) where RequestPublisher.Output == ReSwift.Action {
         publisher.mapError { $0 as? RequestFailure ?? .unknown(String(describing: $0)) }
         .subscribe(store)
     }
 }
-
-
 
 enum HttpVerb: String, Equatable {
     case get = "GET"
@@ -553,7 +476,7 @@ struct PartialAPIRequest<Context, Request: Encodable, Response: Decodable> {
     }
 }
 
-struct APIRequest<Request: Encodable, Response: Decodable> {
+struct APIRequest<Request, Response: Decodable> {
     let method: HttpVerb
     let url: URL
     let bodyData: Data?
@@ -584,7 +507,32 @@ struct APIRequest<Request: Encodable, Response: Decodable> {
     }
 }
 
-extension APIRequest {
+extension APIRequest where Request == Void {
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        including includes: [String] = [],
+        responseType: Response.Type
+    ) throws {
+        self.method = method
+        self.bodyData = nil
+
+        var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
+
+        urlComponents.path = path
+        if includes.count > 0 {
+            urlComponents.queryItems = [.init(name: "include", value: includes.joined(separator: ","))]
+        }
+
+        guard let url = urlComponents.url else {
+            throw RequestFailure.urlConstruction(String(describing: urlComponents))
+        }
+        self.url = url
+    }
+}
+
+extension APIRequest where Request: Encodable {
     init(
         _ method: HttpVerb,
         host: URL,
@@ -809,9 +757,41 @@ extension Publisher where
 }
 
 extension Publisher {
-    func dispatch(_ actions: ((Output) -> ReSwift.Action)...) -> Publishers.FlatMap<Publishers.Sequence<[ReSwift.Action], Failure>, Self> {
+    func dispatch(_ actionHandlers: ((Output) -> ReSwift.Action)...) -> Publishers.FlatMap<Publishers.Sequence<[ReSwift.Action], Failure>, Self> {
         self.flatMap { output in
-            Publishers.Sequence(sequence: actions.map { action in action(output) })
+            Publishers.Sequence(sequence: actionHandlers.map { action in action(output) })
+        }
+    }
+}
+
+extension Publisher where Output == ReSwift.Action {
+    /// Dispatch actions in place of errors. Any non-nil
+    /// result of any action handlers will be dispatched.
+    /// If all handlers return nil, the error will be propogated
+    /// as unhandled.
+    func dispatchError(_ actionHandlers: ((Failure) -> ReSwift.Action?)...) -> Publishers.Catch<Self, Publishers.Concatenate<Self, Publishers.Sequence<[ReSwift.Action], Failure>>> {
+        self.catch { error in
+            let actions = actionHandlers.compactMap { $0(error) }
+            guard actions.count > 0 else {
+                return self.append([])
+            }
+            return self.append(Publishers.Sequence(sequence: actions))
+        }
+    }
+}
+
+extension Publishers.Sequence where Elements == [ReSwift.Action] {
+    /// Dispatch actions in place of errors. Any non-nil
+    /// result of any action handlers will be dispatched.
+    /// If all handlers return nil, the error will be propogated
+    /// as unhandled.
+    func dispatchError(_ actionHandlers: ((Failure) -> ReSwift.Action?)...) -> Publishers.Catch<Self, Publishers.Sequence<[ReSwift.Action], Failure>> {
+        self.catch { error in
+            let actions = actionHandlers.compactMap { $0(error) }
+            guard actions.count > 0 else {
+                return self
+            }
+            return Publishers.Sequence(sequence: actions)
         }
     }
 }
@@ -823,14 +803,10 @@ extension API {
     /// In both cases `nil` is allowed. A `nil` override is
     /// "don't override" and a `nil` source document means the default source
     /// for the server if one is defined.
-    static func newPropertiesDocument(from sourceDocument: API.SingleOpenAPISourceDocument?, apiHostOverride: URL?) throws -> API.CreateAPITestPropertiesDocument {
-        let source = sourceDocument?.body.primaryResource?.value
-        if sourceDocument != nil, source == nil {
-            throw RequestFailure.missingPrimaryResource(String(describing: API.SingleOpenAPISourceDocument.self))
-        }
+    static func newPropertiesDocument(from source: SingleEntityResultPair<API.OpenAPISource>?, apiHostOverride: URL?) throws -> API.CreateAPITestPropertiesDocument {
         let properties = API.NewAPITestProperties(
             attributes: .init(apiHostOverride: apiHostOverride),
-            relationships: .init(openAPISource: source.map { .init(resourceObject: $0) }),
+            relationships: .init(openAPISource: source.map { .init(resourceObject: $0.primaryResource) }),
             meta: .none,
             links: .none
         )
@@ -868,4 +844,11 @@ public enum RequestFailure: Swift.Error {
     case urlConstruction(String)
     case missingPrimaryResource(String)
     case errorResponse([Swift.Error])
+
+    var isMissingPrimaryResource: Bool {
+        guard case .missingPrimaryResource = self else {
+            return false
+        }
+        return true
+    }
 }

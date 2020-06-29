@@ -96,9 +96,9 @@ extension NewTestModalView {
         var description: String {
             switch self {
             case .default:
-                return "default"
+                return "default configuration"
             case .new:
-                return "new"
+                return "new configuration"
             case .existing(_, let sourceUri, let hostOverride):
                 return "\(sourceUri)" + (hostOverride.map { " (server: \($0))" } ?? "")
             }
