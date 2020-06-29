@@ -38,6 +38,7 @@
 		C9AB419A2454DDE400B50FA4 /* MessageTypeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */; };
 		C9AB419C2454DE3600B50FA4 /* TestDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB419B2454DE3600B50FA4 /* TestDetailsHeaderView.swift */; };
 		C9AB419E2454DF5900B50FA4 /* RawTestLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AB419D2454DF5900B50FA4 /* RawTestLogView.swift */; };
+		C9B7928E24A936DC008CFB4E /* Store+CombineSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B7928D24A936DC008CFB4E /* Store+CombineSubscriber.swift */; };
 		C9CD2C0C24454428001A3091 /* NewTestModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0B24454428001A3091 /* NewTestModalView.swift */; };
 		C9CD2C0F2445949A001A3091 /* StandardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CD2C0E2445949A001A3091 /* StandardButton.swift */; };
 		C9D8C42424517CEE000EEC13 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D8C42324517CEE000EEC13 /* HelpView.swift */; };
@@ -92,6 +93,7 @@
 		C9AB41992454DDE300B50FA4 /* MessageTypeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTypeColor.swift; sourceTree = "<group>"; };
 		C9AB419B2454DE3600B50FA4 /* TestDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailsHeaderView.swift; sourceTree = "<group>"; };
 		C9AB419D2454DF5900B50FA4 /* RawTestLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTestLogView.swift; sourceTree = "<group>"; };
+		C9B7928D24A936DC008CFB4E /* Store+CombineSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Store+CombineSubscriber.swift"; sourceTree = "<group>"; };
 		C9CD2C0B24454428001A3091 /* NewTestModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestModalView.swift; sourceTree = "<group>"; };
 		C9CD2C0E2445949A001A3091 /* StandardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardButton.swift; sourceTree = "<group>"; };
 		C9D8C42324517CEE000EEC13 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				C900B21D243EA5C600D14F69 /* ObservableState.swift */,
 				C95AA6BD243ED7F600BA95E7 /* AppState.swift */,
 				C95AA6BF243EDA1700BA95E7 /* EntityCache.swift */,
+				C9B7928D24A936DC008CFB4E /* Store+CombineSubscriber.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -401,6 +404,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9AB41982454DD2A00B50FA4 /* MessageTypeCountCircleView.swift in Sources */,
+				C9B7928E24A936DC008CFB4E /* Store+CombineSubscriber.swift in Sources */,
 				C99F92212443CE54000DD436 /* TestListView.swift in Sources */,
 				C966241B243E28E5005D08F4 /* AppDelegate.swift in Sources */,
 				C96EE75E2442535D005CAAF1 /* APIMiddlewareController.swift in Sources */,

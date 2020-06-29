@@ -11,6 +11,7 @@ import ReSwift
 import APIModels
 import Combine
 import JSONAPI
+import JSONAPIResourceCache
 
 final class APIMiddlewareController {
 
@@ -53,6 +54,19 @@ final class APIMiddlewareController {
                         relationships = .init(testProperties: .init(id: propertiesId))
                     case .new(uri: let uri, apiHostOverride: let apiHostOverride):
                         guard let uri = uri else {
+                            let newPropertiesRequest = try! APIRequest(
+                                .post,
+                                host: state.host,
+                                path: "/openapi_sources",
+                                body: API.newPropertiesDocument(from: nil, apiHostOverride: apiHostOverride),
+                                responseType: API.SingleAPITestPropertiesDocument.self
+                            )
+                            self.request(
+                                newPropertiesRequest
+                                    .publish
+                                    .mapEntities()
+                                    .dispatch(\.cacheAction)
+                            )
                             self.startTestWithNewProperties(
                                 openAPISource: nil,
                                 apiHostOverride: apiHostOverride,
@@ -61,48 +75,43 @@ final class APIMiddlewareController {
                             return
                         }
 
-                        let sourceType: API.SourceType
-                        if URL(string: uri)?.host != nil {
-                            sourceType = .url
-                        } else {
-                            sourceType = .filepath
-                        }
-                        let source = API.NewOpenAPISource(
-                            attributes: .init(
-                                createdAt: Date(),
-                                uri: uri,
-                                sourceType: sourceType
-                            ),
-                            relationships: .none,
-                            meta: .none,
-                            links: .none
-                        )
-                        let document = API.CreateOpenAPISourceDocument(
-                            body: .init(resourceObject: source)
-                        )
-
-                        let r1 = try! APIRequest(
+                        let newSourceRequest = try! APIRequest(
                             .post,
                             host: state.host,
                             path: "/openapi_sources",
-                            body: document,
+                            body: API.newOpenAPISourceDocument(uri: uri),
                             responseType: API.SingleOpenAPISourceDocument.self
                         )
-                        .publish
-                        // TODO: figure out how I want to publish entities to the store
-                        //  in between response and chained request.
-                        .transform(
+                        let newPropertiesRequest = try! PartialAPIRequest(
                             .post,
                             host: state.host,
-                            path: "api_test_properties",
-                            requestBodyConstructor: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
+                            path: "/api_test_properties",
+                            body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
                             responseType: API.SingleAPITestPropertiesDocument.self
                         )
-                        // TODO: figure out how I want to publish entities to the store
-                        //  in between response and chained action.
-                        // TODO: dispatch the next action in chain --
-                        //  store.dispatch(API.StartTest.request(.existing(id: properties.id)))
 
+                        self.request(
+                            newSourceRequest
+                                .publish
+                                .chain(newPropertiesRequest)
+                                .mapPrimaryAndEntities()
+                                .dispatch(
+                                    \.cacheAction,
+                                    { API.StartTest.request(.existing(id: $0.primaryResource.id)) }
+                            )
+                        )
+                        return
+                    case .new(uri: let uri, apiHostOverride: let apiHostOverride):
+                        guard let uri = uri else {
+                            self.startTestWithNewProperties(
+                                openAPISource: nil,
+                                apiHostOverride: apiHostOverride,
+                                state: state
+                            )
+                            return
+                        }
+
+                        let document = API.newOpenAPISourceDocument(uri: uri)
 
                         // super gross nesting here.
                         // TODO: this whole thing should be flattened
@@ -477,8 +486,12 @@ extension APIMiddlewareController {
             print("Failure to send request: \(error)")
         }
     }
-}
 
+    func request<RequestPublisher: Publisher>(_ publisher: RequestPublisher) where RequestPublisher.Output == ReSwift.Action {
+        publisher.mapError { $0 as? RequestFailure ?? .unknown(String(describing: $0)) }
+        .subscribe(store)
+    }
+}
 
 
 
@@ -489,7 +502,58 @@ enum HttpVerb: String, Equatable {
     case delete = "DELETE"
 }
 
-struct APIRequest<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument> {
+struct PartialAPIRequest<Context, Request: Encodable, Response: Decodable> {
+    let method: HttpVerb
+    let url: (Context) throws -> URL
+    let bodyData: (Context) throws -> Data?
+
+    func `for`(context: Context) throws -> APIRequest<Request, Response> {
+        return APIRequest(
+            method: method,
+            url: try url(context),
+            bodyData: try bodyData(context)
+        )
+    }
+
+    init(
+        _ method: HttpVerb,
+        url: @escaping (Context) -> URL,
+        body: @escaping (Context) throws -> Request?,
+        responseType: Response.Type
+    ) {
+        self.method = method
+        self.url = url
+        self.bodyData = { context in try APIMiddlewareController.encoder
+            .encode(body(context)) }
+    }
+
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        body: @escaping (Context) throws -> Request?,
+        including includes: [String] = [],
+        responseType: Response.Type
+    ) throws {
+        var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
+
+        urlComponents.path = path
+        if includes.count > 0 {
+            urlComponents.queryItems = [.init(name: "include", value: includes.joined(separator: ","))]
+        }
+
+        guard let url = urlComponents.url else {
+            throw RequestFailure.urlConstruction(String(describing: urlComponents))
+        }
+        self.url = { _ in url }
+
+        self.method = method
+        self.bodyData = { context in try APIMiddlewareController.encoder
+            .encode(body(context)) }
+    }
+}
+
+struct APIRequest<Request: Encodable, Response: Decodable> {
     let method: HttpVerb
     let url: URL
     let bodyData: Data?
@@ -546,7 +610,7 @@ extension APIRequest {
         self.url = url
     }
 
-    static func transformation<Other: EncodableJSONAPIDocument>(
+    static func transformation<Other>(
         _ method: HttpVerb,
         host: URL,
         path: String,
@@ -567,39 +631,32 @@ extension APIRequest {
     }
 }
 
-extension Publishers.Decode where Upstream == Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Coder == JSONDecoder, Output: EncodableJSONAPIDocument {
+extension Publisher {
 
-    func transform<Request: EncodableJSONAPIDocument, Response: CodableJSONAPIDocument>(
+    func chain<Request: Encodable, Response: Decodable>(
+        _ partialRequest: PartialAPIRequest<Output?, Request, Response>
+    ) -> Publishers.FlatMap<Publishers.Decode<Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Response, JSONDecoder>, Publishers.TryMap<Self, APIRequest<Request, Response>>> {
+        self
+            .tryMap(partialRequest.for(context:))
+            .flatMap { $0.publish }
+    }
+
+    func chain<Request: Encodable, Response: Decodable>(
+        _ partialRequest: PartialAPIRequest<Output, Request, Response>
+    ) -> Publishers.FlatMap<Publishers.Decode<Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Response, JSONDecoder>, Publishers.TryMap<Self, APIRequest<Request, Response>>> {
+        self
+            .tryMap(partialRequest.for(context:))
+            .flatMap { $0.publish }
+    }
+
+    func chain<Request: Encodable, Response: Decodable>(
         _ method: HttpVerb,
         host: URL,
         path: String,
         including includes: [String] = [],
         requestBodyConstructor: @escaping (Output) throws -> Request,
         responseType: Response.Type
-    ) -> Publishers.FlatMap<
-            Publishers.Decode<
-                Publishers.TryMap<
-                    URLSession.DataTaskPublisher,
-                    JSONDecoder.Input
-                >,
-                Response,
-                JSONDecoder
-            >,
-            Publishers.TryMap<
-                Publishers.Decode<
-                    Publishers.TryMap<
-                        URLSession.DataTaskPublisher,
-                        JSONDecoder.Input
-                    >,
-                    Output,
-                    JSONDecoder
-                >,
-                APIRequest<
-                    Request,
-                    Response
-                >
-            >
-        > {
+    ) -> Publishers.FlatMap<Publishers.Decode<Publishers.TryMap<URLSession.DataTaskPublisher, JSONDecoder.Input>, Response, JSONDecoder>, Publishers.TryMap<Self, APIRequest<Request, Response>>> {
         self.tryMap(
             APIRequest.transformation(
                 method,
@@ -611,6 +668,151 @@ extension Publishers.Decode where Upstream == Publishers.TryMap<URLSession.DataT
             )
         )
         .flatMap { $0.publish }
+    }
+}
+
+protocol CachableEntities {
+    var cacheAction: ReSwift.Action { get }
+}
+
+struct SingleEntityResultPair<Primary: CacheableResource>: CachableEntities where Primary.Cache == EntityCache {
+    let primaryResource: Primary
+    let allEntities: EntityCache
+
+    var cacheAction: Action { allEntities.asUpdate }
+}
+
+struct ManyEntityResultPair<Primary: CacheableResource>: CachableEntities where Primary.Cache == EntityCache {
+    let primaryResources: [Primary]
+    let allEntities: EntityCache
+
+    var cacheAction: Action { allEntities.asUpdate }
+}
+
+// Single, no includes
+extension Publisher where
+    Output: EncodableJSONAPIDocument,
+    Output.BodyData.PrimaryResourceBody: SingleResourceBodyProtocol,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource: CacheableResource,
+    Output.BodyData.IncludeType == NoIncludes,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == EntityCache {
+
+    func mapEntities() -> Publishers.TryMap<Self, EntityCache> {
+        self.tryMap(Self.extractEntities)
+    }
+
+    func mapPrimaryAndEntities() -> Publishers.TryMap<Self, SingleEntityResultPair<Output.BodyData.PrimaryResourceBody.PrimaryResource>> {
+        self.tryMap(Self.extractPrimaryAndEntities)
+    }
+
+    static func extractEntities(from document: Output) throws -> EntityCache {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let entities = document.resourceCache() else {
+            throw RequestFailure.unknown("Somehow found a document that is not an error document but also failed to create entities.")
+        }
+        return entities
+    }
+
+    static func extractPrimaryAndEntities(from document: Output) throws -> SingleEntityResultPair<Output.BodyData.PrimaryResourceBody.PrimaryResource> {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let primary = document.body.primaryResource?.value, let entities = document.resourceCache() else {
+            throw RequestFailure.missingPrimaryResource(String(describing: Output.PrimaryResourceBody.PrimaryResource.self))
+        }
+        return .init(primaryResource: primary, allEntities: entities)
+    }
+}
+
+// Single, some includes
+extension Publisher where
+    Output: EncodableJSONAPIDocument,
+    Output.BodyData.PrimaryResourceBody: SingleResourceBodyProtocol,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource: CacheableResource,
+    Output.BodyData.IncludeType: CacheableResource,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == Output.BodyData.IncludeType.Cache,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == EntityCache {
+
+    func mapEntities() -> Publishers.TryMap<Self, EntityCache> {
+        self.tryMap(Self.extractEntities)
+    }
+
+    func mapPrimaryAndEntities() -> Publishers.TryMap<Self, SingleEntityResultPair<Output.BodyData.PrimaryResourceBody.PrimaryResource>> {
+        self.tryMap(Self.extractPrimaryAndEntities)
+    }
+
+    static func extractEntities(from document: Output) throws -> EntityCache {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let entities = document.resourceCache() else {
+            throw RequestFailure.unknown("Somehow found a document that is not an error document but also failed to create entities.")
+        }
+        return entities
+    }
+
+    static func extractPrimaryAndEntities(from document: Output) throws -> SingleEntityResultPair<Output.BodyData.PrimaryResourceBody.PrimaryResource> {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let primary = document.body.primaryResource?.value, let entities = document.resourceCache() else {
+            throw RequestFailure.missingPrimaryResource(String(describing: Output.PrimaryResourceBody.PrimaryResource.self))
+        }
+        return .init(primaryResource: primary, allEntities: entities)
+    }
+}
+
+// Many, some includes
+extension Publisher where
+    Output: EncodableJSONAPIDocument,
+    Output.BodyData.PrimaryResourceBody: ManyResourceBodyProtocol,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource: CacheableResource,
+    Output.BodyData.IncludeType: CacheableResource,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == Output.BodyData.IncludeType.Cache,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == EntityCache {
+
+    func mapEntities() -> Publishers.TryMap<Self, EntityCache> {
+        self.tryMap(Self.extractEntities)
+    }
+
+    func mapPrimaryAndEntities() -> Publishers.TryMap<Self, ManyEntityResultPair<Output.PrimaryResourceBody.PrimaryResource>> {
+        self.tryMap(Self.extractPrimaryAndEntities)
+    }
+
+    static func extractEntities(from document: Output) throws -> EntityCache {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let entities = document.resourceCache() else {
+            throw RequestFailure.unknown("Somehow found a document that is not an error document but also failed to create entities.")
+        }
+        return entities
+    }
+
+    static func extractPrimaryAndEntities(from document: Output) throws -> ManyEntityResultPair<Output.PrimaryResourceBody.PrimaryResource> {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let primary = document.body.primaryResource?.values, let entities = document.resourceCache() else {
+            throw RequestFailure.missingPrimaryResource(String(describing: Output.PrimaryResourceBody.PrimaryResource.self))
+        }
+        return .init(primaryResources: primary, allEntities: entities)
+    }
+}
+
+extension Publisher {
+    func dispatch(_ actions: ((Output) -> ReSwift.Action)...) -> Publishers.FlatMap<Publishers.Sequence<[ReSwift.Action], Failure>, Self> {
+        self.flatMap { output in
+            Publishers.Sequence(sequence: actions.map { action in action(output) })
+        }
     }
 }
 
@@ -637,10 +839,33 @@ extension API {
             body: .init(resourceObject: properties)
         )
     }
+
+    static func newOpenAPISourceDocument(uri: String) -> API.CreateOpenAPISourceDocument {
+        let sourceType: API.SourceType
+        if URL(string: uri)?.host != nil {
+            sourceType = .url
+        } else {
+            sourceType = .filepath
+        }
+        let source = API.NewOpenAPISource(
+            attributes: .init(
+                createdAt: Date(),
+                uri: uri,
+                sourceType: sourceType
+            ),
+            relationships: .none,
+            meta: .none,
+            links: .none
+        )
+        return API.CreateOpenAPISourceDocument(
+            body: .init(resourceObject: source)
+        )
+    }
 }
 
-enum RequestFailure: Swift.Error {
+public enum RequestFailure: Swift.Error {
     case unknown(String)
     case urlConstruction(String)
     case missingPrimaryResource(String)
+    case errorResponse([Swift.Error])
 }
