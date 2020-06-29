@@ -45,24 +45,18 @@ final class APIMiddlewareController {
                 case let .request(source) as API.StartTest:
                     self.testWatchController.connectIfNeeded(to: state.host)
 
-                    let relationships: API.NewAPITestDescriptor.Description.Relationships
+                    let propertiesId: API.APITestProperties.Id?
 
                     switch source {
                     case .default:
-                        relationships = .init()
-                    case .existing(id: let propertiesId):
-                        relationships = .init(testProperties: .init(id: propertiesId))
+                        propertiesId = nil
+                    case .existing(id: let id):
+                        propertiesId = id
                     case .new(uri: let uri, apiHostOverride: let apiHostOverride):
                         guard let uri = uri else {
-                            let newPropertiesRequest = try! APIRequest(
-                                .post,
-                                host: state.host,
-                                path: "/api_test_properties",
-                                body: API.newPropertiesDocument(from: nil, apiHostOverride: apiHostOverride),
-                                responseType: API.SingleAPITestPropertiesDocument.self
-                            )
                             self.perform(
-                                newPropertiesRequest
+                                try! API.Request
+                                    .newProperties(host: state.host, source: nil, apiHostOverride: apiHostOverride)
                                     .publish
                                     .mapPrimaryAndEntities()
                                     .dispatch(
@@ -76,26 +70,12 @@ final class APIMiddlewareController {
                             return
                         }
 
-                        let newSourceRequest = try! APIRequest(
-                            .post,
-                            host: state.host,
-                            path: "/openapi_sources",
-                            body: API.newOpenAPISourceDocument(uri: uri),
-                            responseType: API.SingleOpenAPISourceDocument.self
-                        )
-                        let newPropertiesRequest = try! PartialAPIRequest(
-                            .post,
-                            host: state.host,
-                            path: "/api_test_properties",
-                            body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
-                            responseType: API.SingleAPITestPropertiesDocument.self
-                        )
-
                         self.perform(
-                            newSourceRequest
+                            try! API.Request
+                                .newSource(host: state.host, uri: uri)
                                 .publish
                                 .mapPrimaryAndEntities()
-                                .chain(newPropertiesRequest)
+                                .chain(try! API.Request.newProperties(host: state.host, apiHostOverride: apiHostOverride))
                                 .mapPrimaryAndEntities()
                                 .dispatch(
                                     \.cacheAction,
@@ -108,36 +88,19 @@ final class APIMiddlewareController {
                         return
                     }
 
-                    let testDescriptor = API.NewAPITestDescriptor(attributes: .none, relationships: relationships, meta: .none, links: .none)
-
-                    let document = API.CreateAPITestDescriptorDocument(
-                        body: .init(resourceObject: testDescriptor)
+                    self.perform(
+                        try! API.Request
+                            .newTest(host: state.host, propertiesId: propertiesId)
+                            .publish
+                            .mapEntities()
+                            .dispatch(\.cacheAction)
+                            .dispatchError { error in (error as? RequestFailure).map { _ in Toast.apiError(message: "Failed to start a new test run") } }
                     )
-
-                    do {
-                        try self.jsonApiRequest(
-                            .post,
-                            host: state.host,
-                            path: "/api_tests",
-                            body: document
-                        ) { (_: API.SingleAPITestDescriptorDocument) -> EntityCache in
-
-                            return EntityCache()
-                        }
-                    } catch {
-                        store.dispatch(Toast.apiError(message: "Failed to start a new test run"))
-                        print("Failure to send request: \(error)")
-                    }
 
                 case .request as API.GetAllTests:
-                    let allTestsRequest = try! APIRequest(
-                        .get,
-                        host: state.host,
-                        path: "/api_tests",
-                        responseType: API.BatchAPITestDescriptorDocument.self
-                    )
                     self.perform(
-                        allTestsRequest
+                        try! API.Request
+                            .allTests(host: state.host)
                             .publish
                             .mapEntities()
                             .dispatch(\.cacheAction)
@@ -187,35 +150,28 @@ final class APIMiddlewareController {
                     }
 
                 case .request as API.GetAllSources:
-                    self.jsonApiRequest(
-                        .get,
-                        host: state.host,
-                        path: "/openapi_sources"
-                    ) { (response: API.BatchOpenAPISourceDocument) -> EntityCache in
-                        guard let entities = response.resourceCache() else {
-                            print("failed to retrieve primary resources from batch openapi source response")
-                            store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response"))
-                            return EntityCache()
-                        }
-
-                        return entities
-                    }
+                    self.perform(
+                        try! API.Request
+                            .allSources(host: state.host)
+                            .publish
+                            .mapEntities()
+                            .dispatch(\.cacheAction)
+                            .dispatchError(
+                                { error in (error as? RequestFailure).flatMap { $0.isMissingPrimaryResource ? Toast.apiError(message: "Failed to retrieve primary resources from batch openapi source response") : nil } }
+                            )
+                    )
 
                 case .request as API.GetAllProperties:
-                    self.jsonApiRequest(
-                        .get,
-                        host: state.host,
-                        path: "/api_test_properties",
-                        including: ["openAPISource"]
-                    ) { (response: API.BatchAPITestPropertiesDocument) -> EntityCache in
-                        guard let entities = response.resourceCache() else {
-                                print("failed to retrieve primary resources from batch api test properties response")
-                                store.dispatch(Toast.apiError(message: "Failed to retrieve primary resources from batch api test properties response"))
-                                return EntityCache()
-                        }
-
-                        return entities
-                    }
+                    self.perform(
+                        try! API.Request
+                            .allProperties(host: state.host)
+                            .publish
+                            .mapEntities()
+                            .dispatch(\.cacheAction)
+                            .dispatchError(
+                                { error in (error as? RequestFailure).flatMap { $0.isMissingPrimaryResource ? Toast.apiError(message: "Failed to retrieve primary resources from batch api test properties response") : nil } }
+                            )
+                    )
 
                 case .start as API.WatchTests:
                     self.testWatchController.connectIfNeeded(to: state.host)
@@ -418,6 +374,90 @@ extension APIMiddlewareController {
     }
 }
 
+extension API {
+    enum Request {
+        static func newSource(host: URL, uri: String) throws -> APIRequest<API.CreateOpenAPISourceDocument, API.SingleOpenAPISourceDocument> {
+            let document = API.newOpenAPISourceDocument(uri: uri)
+
+            return try APIRequest(
+                .post,
+                host: host,
+                path: "/openapi_sources",
+                body: document
+            )
+        }
+
+        static func newProperties(host: URL, source: SingleEntityResultPair<API.OpenAPISource>?, apiHostOverride: URL?) throws -> APIRequest<API.CreateAPITestPropertiesDocument, API.SingleAPITestPropertiesDocument> {
+            let document = try API.newPropertiesDocument(from: source, apiHostOverride: apiHostOverride)
+
+            return try APIRequest(
+                .post,
+                host: host,
+                path: "/api_test_properties",
+                body: document
+            )
+        }
+
+        static func newProperties(host: URL, apiHostOverride: URL?) throws -> PartialAPIRequest<SingleEntityResultPair<API.OpenAPISource>?, API.CreateAPITestPropertiesDocument, API.SingleAPITestPropertiesDocument> {
+            try PartialAPIRequest(
+                .post,
+                host: host,
+                path: "/api_test_properties",
+                body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) }
+            )
+        }
+
+        /// Create tests with `nil` properties Id to allow the server to pick
+        /// default properties.
+        static func newTest(host: URL, propertiesId: API.APITestProperties.Id?) throws -> APIRequest<API.CreateAPITestDescriptorDocument, API.SingleAPITestDescriptorDocument> {
+            let relationships = API.NewAPITestDescriptor.Description.Relationships(
+                testProperties: propertiesId.map { .init(id: $0) }
+            )
+            let testDescriptor = API.NewAPITestDescriptor(
+                attributes: .none,
+                relationships: relationships,
+                meta: .none,
+                links: .none
+            )
+            let document = API.CreateAPITestDescriptorDocument(
+                body: .init(resourceObject: testDescriptor)
+            )
+
+            return try APIRequest(
+                .post,
+                host: host,
+                path: "/api_tests",
+                body: document
+            )
+        }
+
+        static func allTests(host: URL) throws -> APIRequest<Void, API.BatchAPITestDescriptorDocument> {
+            try APIRequest(
+                .get,
+                host: host,
+                path: "/api_tests"
+            )
+        }
+
+        static func allSources(host: URL) throws -> APIRequest<Void, API.BatchOpenAPISourceDocument> {
+            try APIRequest(
+                .get,
+                host: host,
+                path: "/openapi_sources"
+            )
+        }
+
+        static func allProperties(host: URL) throws -> APIRequest<Void, API.BatchAPITestPropertiesDocument> {
+            try APIRequest(
+                .get,
+                host: host,
+                path: "/api_test_properties",
+                including: ["openAPISource"]
+            )
+        }
+    }
+}
+
 enum HttpVerb: String, Equatable {
     case get = "GET"
     case post = "POST"
@@ -457,6 +497,22 @@ struct PartialAPIRequest<Context, Request: Encodable, Response: Decodable> {
         body: @escaping (Context) throws -> Request?,
         including includes: [String] = [],
         responseType: Response.Type
+    ) throws {
+        try self.init(
+            method,
+            host: host,
+            path: path,
+            body: body,
+            including: includes
+        )
+    }
+
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        body: @escaping (Context) throws -> Request?,
+        including includes: [String] = []
     ) throws {
         var urlComponents = URLComponents(url: host, resolvingAgainstBaseURL: false)!
 
@@ -515,6 +571,20 @@ extension APIRequest where Request == Void {
         including includes: [String] = [],
         responseType: Response.Type
     ) throws {
+        try self.init(
+            method,
+            host: host,
+            path: path,
+            including: includes
+        )
+    }
+
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        including includes: [String] = []
+    ) throws {
         self.method = method
         self.bodyData = nil
 
@@ -533,6 +603,22 @@ extension APIRequest where Request == Void {
 }
 
 extension APIRequest where Request: Encodable {
+    init(
+        _ method: HttpVerb,
+        host: URL,
+        path: String,
+        body: Request,
+        including includes: [String] = []
+    ) throws {
+        try self.init(
+            method,
+            host: host,
+            path: path,
+            body: body,
+            including: includes
+        )
+    }
+
     init(
         _ method: HttpVerb,
         host: URL,
@@ -713,6 +799,45 @@ extension Publisher where
             throw RequestFailure.missingPrimaryResource(String(describing: Output.PrimaryResourceBody.PrimaryResource.self))
         }
         return .init(primaryResource: primary, allEntities: entities)
+    }
+}
+
+// Many, no includes
+extension Publisher where
+    Output: EncodableJSONAPIDocument,
+    Output.BodyData.PrimaryResourceBody: ManyResourceBodyProtocol,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource: CacheableResource,
+    Output.BodyData.IncludeType == NoIncludes,
+    Output.BodyData.PrimaryResourceBody.PrimaryResource.Cache == EntityCache {
+
+    func mapEntities() -> Publishers.TryMap<Self, EntityCache> {
+        self.tryMap(Self.extractEntities)
+    }
+
+    func mapPrimaryAndEntities() -> Publishers.TryMap<Self, ManyEntityResultPair<Output.PrimaryResourceBody.PrimaryResource>> {
+        self.tryMap(Self.extractPrimaryAndEntities)
+    }
+
+    static func extractEntities(from document: Output) throws -> EntityCache {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let entities = document.resourceCache() else {
+            throw RequestFailure.unknown("Somehow found a document that is not an error document but also failed to create entities.")
+        }
+        return entities
+    }
+
+    static func extractPrimaryAndEntities(from document: Output) throws -> ManyEntityResultPair<Output.PrimaryResourceBody.PrimaryResource> {
+
+        if let errors = document.body.errors {
+            throw RequestFailure.errorResponse(errors)
+        }
+        guard let primary = document.body.primaryResource?.values, let entities = document.resourceCache() else {
+            throw RequestFailure.missingPrimaryResource(String(describing: Output.PrimaryResourceBody.PrimaryResource.self))
+        }
+        return .init(primaryResources: primary, allEntities: entities)
     }
 }
 
