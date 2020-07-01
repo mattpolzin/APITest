@@ -198,7 +198,6 @@ extension APIMiddlewareController {
                 { error in (error as? URLError).map { _ in Toast.apiError(message: "Network Request Failed") } }
             )
             .mapError { $0 as? ResponseFailure ?? .unknown(String(describing: $0)) }
-            .print()
             .subscribe(store)
     }
 }
