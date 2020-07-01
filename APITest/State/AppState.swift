@@ -185,7 +185,7 @@ extension AppState {
             state.takeover = .none
             return state
         case .newSource as NewTest:
-            state.takeover = .modal(.newTest(.newSource(.init(openAPISourceUri: "", serverHostOverride: nil))))
+            state.takeover = .modal(.newTest(.newSource(.init(openAPISourceUri: nil, serverHostOverride: nil))))
             return state
         case .cancelNewSource as NewTest:
             state.takeover = .modal(.newTest(.selectSource))
