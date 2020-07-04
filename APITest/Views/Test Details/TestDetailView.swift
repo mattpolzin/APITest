@@ -28,7 +28,7 @@ struct TestDetailView: View {
             let source: API.OpenAPISource
             let hostOverride: URL?
             let messages: [API.APITestMessage]
-            let logs: String
+            let logs: String?
             let viewing: TestDetailsHeaderView.Viewing
         }
 
@@ -51,6 +51,13 @@ struct TestDetailView: View {
                 return nil
             }
             return values.viewing
+        }
+
+        var rawLogs: String? {
+            guard let values = populatedValues else {
+                return nil
+            }
+            return values.logs
         }
     }
 
@@ -116,7 +123,8 @@ struct TestDetailView: View {
                 errorCount: errorCount,
                 messageTypeFilters: messageTypeFilters,
                 filterText: filterText,
-                viewing: state.viewing
+                viewing: state.viewing,
+                rawLogsAvailable: state.rawLogs != nil
             ).padding(.top, 10).padding(.bottom, 5)
 
             // source subheader
@@ -127,7 +135,7 @@ struct TestDetailView: View {
             state.populatedValues.map { state in
                 Group {
                     if state.viewing == .logs {
-                        RawTestLogView(logs: state.logs)
+                        RawTestLogView(logs: state.logs ?? "")
                     } else if state.viewing == .messages {
                         List {
                             ForEach(sortedAndFiltered(state.messages)) { message in
@@ -178,7 +186,7 @@ extension TestDetailView {
                 return
         }
         let messages = (test ~> \.messages).compactMap { $0.materialized(from: entities) }
-        let logs = entities.testLogs[test.id] ?? ""
+        let logs = entities.testLogs[test.id]
 
         self.state = .populated(
             .init(
