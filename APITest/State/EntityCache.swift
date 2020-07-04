@@ -44,6 +44,10 @@ extension EntityCache {
     }
 }
 
+extension EntityCache: CachableEntities {
+    var cacheAction: Action { asUpdate }
+}
+
 extension API.OpenAPISourceDescription: Materializable {
     public static var cachePath: WritableKeyPath<EntityCache, ResourceHash<API.OpenAPISource>> { \.testSources }
 }

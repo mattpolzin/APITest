@@ -18,6 +18,7 @@ struct TestDetailsHeaderView: View {
     let filterText: String
 
     let viewing: Viewing?
+    let rawLogsAvailable: Bool
 
     enum Viewing: Equatable {
         case messages
@@ -46,23 +47,35 @@ struct TestDetailsHeaderView: View {
             }
             HStack {
                 Spacer()
-                Button(
-                    action: { store.dispatch(Toggle.detailsLogsOrMessages) },
-                    label: {
-                        Group {
-                            if viewing == .messages {
-                                Image("Code Braces").resizable()
-                            } else {
-                                Image("Checklist").resizable()
-                            }
-                        }
-                    }
+                RawLogButton(
+                    enabled: rawLogsAvailable,
+                    viewing: viewing
                 )
-                    .padding(8)
-                    .frame(width: 46, height: 46)
-                    .opacity(viewing == nil ? 0.0 : 1.0)
-                    .disabled(viewing == nil)
             }
         }
+    }
+}
+
+struct RawLogButton: View {
+    let enabled: Bool
+    let viewing: TestDetailsHeaderView.Viewing?
+
+    var body: some View {
+        Button(
+            action: { store.dispatch(Toggle.detailsLogsOrMessages) },
+            label: {
+                Group {
+                    if viewing == .messages {
+                        Image("Code Braces").resizable()
+                    } else {
+                        Image("Checklist").resizable()
+                    }
+                }
+            }
+        )
+        .padding(8)
+        .frame(width: 46, height: 46)
+        .opacity(!enabled || viewing == nil ? 0.0 : 1.0)
+        .disabled(!enabled || viewing == nil)
     }
 }

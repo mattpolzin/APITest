@@ -10,6 +10,7 @@
 		C900B21E243EA5C600D14F69 /* ObservableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C900B21D243EA5C600D14F69 /* ObservableState.swift */; };
 		C900B221243EAD4E00D14F69 /* ReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C900B220243EAD4E00D14F69 /* ReSwift */; };
 		C917CF34243EA15500C54CE2 /* TestServerModels in Frameworks */ = {isa = PBXBuildFile; productRef = C917CF33243EA15500C54CE2 /* TestServerModels */; };
+		C9310EB124AAC49F005B5E80 /* JSONAPICombine in Frameworks */ = {isa = PBXBuildFile; productRef = C9310EB024AAC49F005B5E80 /* JSONAPICombine */; };
 		C939EE50248DBC7400873D8F /* NewTestCreateSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */; };
 		C939EE52248DFC7200873D8F /* NewTestSelectSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */; };
 		C9409AE9244105B1008945FB /* APITestWatcherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9409AE8244105B1008945FB /* APITestWatcherController.swift */; };
@@ -28,6 +29,9 @@
 		C96EE75B2442520F005CAAF1 /* APIActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75A2442520F005CAAF1 /* APIActions.swift */; };
 		C96EE75E2442535D005CAAF1 /* APIMiddlewareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96EE75D2442535D005CAAF1 /* APIMiddlewareController.swift */; };
 		C98C0053248E0405003B6377 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98C0052248E0405003B6377 /* TextField.swift */; };
+		C995F6BD24AA706E00015270 /* Combine+ReSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = C995F6BC24AA706E00015270 /* Combine+ReSwift.swift */; };
+		C995F6C224AABDD300015270 /* CombineReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C995F6C124AABDD300015270 /* CombineReSwift */; };
+		C995F6C524AABE2000015270 /* CombineAPIRequest in Frameworks */ = {isa = PBXBuildFile; productRef = C995F6C424AABE2000015270 /* CombineAPIRequest */; };
 		C99F921C2442C22C000DD436 /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921B2442C22C000DD436 /* AppActions.swift */; };
 		C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F921E2442F851000DD436 /* TestDetailView.swift */; };
 		C99F92212443CE54000DD436 /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F92202443CE54000DD436 /* TestListView.swift */; };
@@ -83,6 +87,7 @@
 		C96EE75A2442520F005CAAF1 /* APIActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIActions.swift; sourceTree = "<group>"; };
 		C96EE75D2442535D005CAAF1 /* APIMiddlewareController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIMiddlewareController.swift; sourceTree = "<group>"; };
 		C98C0052248E0405003B6377 /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
+		C995F6BC24AA706E00015270 /* Combine+ReSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Combine+ReSwift.swift"; sourceTree = "<group>"; };
 		C99F921B2442C22C000DD436 /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
 		C99F921E2442F851000DD436 /* TestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDetailView.swift; sourceTree = "<group>"; };
 		C99F92202443CE54000DD436 /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
@@ -108,10 +113,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9E06E4524511ABD00101C04 /* Poly in Frameworks */,
+				C995F6C524AABE2000015270 /* CombineAPIRequest in Frameworks */,
+				C995F6C224AABDD300015270 /* CombineReSwift in Frameworks */,
 				C917CF34243EA15500C54CE2 /* TestServerModels in Frameworks */,
 				C900B221243EAD4E00D14F69 /* ReSwift in Frameworks */,
 				C9A41A2E247E368000038208 /* JSONAPIResourceCache in Frameworks */,
 				C9409AEC2441068B008945FB /* WebSocketKit in Frameworks */,
+				C9310EB124AAC49F005B5E80 /* JSONAPICombine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +174,7 @@
 		C9662419243E28E5005D08F4 /* APITest */ = {
 			isa = PBXGroup;
 			children = (
+				C995F6B324AA6EF500015270 /* API */,
 				C96A3D1E24510F3200DC3D65 /* Config */,
 				C9F6CB74244BF92A00945FBF /* Validators */,
 				C9F6CB73244BF91F00945FBF /* Controllers */,
@@ -225,6 +234,14 @@
 				C9F6CB7B244C299D00945FBF /* ToastMiddlewareController.swift */,
 			);
 			path = Middleware;
+			sourceTree = "<group>";
+		};
+		C995F6B324AA6EF500015270 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				C995F6BC24AA706E00015270 /* Combine+ReSwift.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 		C99F921D2442F842000DD436 /* Views */ = {
@@ -305,6 +322,9 @@
 				C9409AEB2441068B008945FB /* WebSocketKit */,
 				C9E06E4424511ABD00101C04 /* Poly */,
 				C9A41A2D247E368000038208 /* JSONAPIResourceCache */,
+				C995F6C124AABDD300015270 /* CombineReSwift */,
+				C995F6C424AABE2000015270 /* CombineAPIRequest */,
+				C9310EB024AAC49F005B5E80 /* JSONAPICombine */,
 			);
 			productName = APITest;
 			productReference = C9662417243E28E5005D08F4 /* APITest.app */;
@@ -364,6 +384,9 @@
 				C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */,
 				C9E06E4324511ABD00101C04 /* XCRemoteSwiftPackageReference "Poly" */,
 				C9A41A2C247E368000038208 /* XCRemoteSwiftPackageReference "JSONAPI-ResourceStorage" */,
+				C995F6C024AABDD200015270 /* XCRemoteSwiftPackageReference "CombineReSwift" */,
+				C995F6C324AABE2000015270 /* XCRemoteSwiftPackageReference "CombineAPIRequest" */,
+				C9310EAF24AAC49E005B5E80 /* XCRemoteSwiftPackageReference "JSONAPI-Combine" */,
 			);
 			productRefGroup = C9662418243E28E5005D08F4 /* Products */;
 			projectDirPath = "";
@@ -401,6 +424,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9AB41982454DD2A00B50FA4 /* MessageTypeCountCircleView.swift in Sources */,
+				C995F6BD24AA706E00015270 /* Combine+ReSwift.swift in Sources */,
 				C99F92212443CE54000DD436 /* TestListView.swift in Sources */,
 				C966241B243E28E5005D08F4 /* AppDelegate.swift in Sources */,
 				C96EE75E2442535D005CAAF1 /* APIMiddlewareController.swift in Sources */,
@@ -710,6 +734,14 @@
 				minimumVersion = 0.3.0;
 			};
 		};
+		C9310EAF24AAC49E005B5E80 /* XCRemoteSwiftPackageReference "JSONAPI-Combine" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:mattpolzin/JSONAPI-Combine.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:vapor/websocket-kit.git";
@@ -718,12 +750,28 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		C995F6C024AABDD200015270 /* XCRemoteSwiftPackageReference "CombineReSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:mattpolzin/CombineReSwift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		C995F6C324AABE2000015270 /* XCRemoteSwiftPackageReference "CombineAPIRequest" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:mattpolzin/CombineAPIRequest.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		C9A41A2C247E368000038208 /* XCRemoteSwiftPackageReference "JSONAPI-ResourceStorage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:mattpolzin/JSONAPI-ResourceStorage.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.2.0;
+				minimumVersion = 0.2.2;
 			};
 		};
 		C9E06E4324511ABD00101C04 /* XCRemoteSwiftPackageReference "Poly" */ = {
@@ -747,10 +795,25 @@
 			package = C917CF32243EA15500C54CE2 /* XCRemoteSwiftPackageReference "jsonapi-openapi-test-server" */;
 			productName = TestServerModels;
 		};
+		C9310EB024AAC49F005B5E80 /* JSONAPICombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9310EAF24AAC49E005B5E80 /* XCRemoteSwiftPackageReference "JSONAPI-Combine" */;
+			productName = JSONAPICombine;
+		};
 		C9409AEB2441068B008945FB /* WebSocketKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C9409AEA2441068B008945FB /* XCRemoteSwiftPackageReference "websocket-kit" */;
 			productName = WebSocketKit;
+		};
+		C995F6C124AABDD300015270 /* CombineReSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C995F6C024AABDD200015270 /* XCRemoteSwiftPackageReference "CombineReSwift" */;
+			productName = CombineReSwift;
+		};
+		C995F6C424AABE2000015270 /* CombineAPIRequest */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C995F6C324AABE2000015270 /* XCRemoteSwiftPackageReference "CombineAPIRequest" */;
+			productName = CombineAPIRequest;
 		};
 		C9A41A2D247E368000038208 /* JSONAPIResourceCache */ = {
 			isa = XCSwiftPackageProductDependency;
