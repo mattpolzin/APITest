@@ -118,8 +118,10 @@ final class APITestWatcherController {
                 for include in messageDoc.data.includes.values {
                     switch include {
                     case .a(let descriptor):
-                        DispatchQueue.main.async {
-                            store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
+                        if [.passed, .failed].contains(descriptor.status) {
+                            DispatchQueue.main.async {
+                                store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
+                            }
                         }
                     }
                 }
