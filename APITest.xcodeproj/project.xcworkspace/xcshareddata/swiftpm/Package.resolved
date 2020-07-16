@@ -146,15 +146,6 @@
         }
       },
       {
-        "package": "OpenAPIReflection",
-        "repositoryURL": "https://github.com/mattpolzin/OpenAPIReflection",
-        "state": {
-          "branch": null,
-          "revision": "34eb557d0ab49a95d3a39e7a821fcb12ff50ba8a",
-          "version": "0.3.0"
-        }
-      },
-      {
         "package": "Poly",
         "repositoryURL": "git@github.com:mattpolzin/Poly.git",
         "state": {

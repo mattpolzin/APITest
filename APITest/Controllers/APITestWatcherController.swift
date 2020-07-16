@@ -114,20 +114,15 @@ final class APITestWatcherController {
             case .a(let messageDoc):
                 print("adding test message")
                 entities = messageDoc.resourceCache()
-
-                for include in messageDoc.data.includes.values {
-                    switch include {
-                    case .a(let descriptor):
-                        if [.passed, .failed].contains(descriptor.status) {
-                            DispatchQueue.main.async {
-                                store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
-                            }
-                        }
-                    }
-                }
             case .b(let descriptorDoc):
                 print("adding test descriptor")
                 entities = descriptorDoc.resourceCache()
+                let descriptor = descriptorDoc.primaryResource.value
+                if [.passed, .failed].contains(descriptor.status) {
+                    DispatchQueue.main.async {
+                        store.dispatch(API.GetTest.requestRawLogs(id: descriptor.id))
+                    }
+                }
             }
 
             let update = entities.asUpdate
