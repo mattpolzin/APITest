@@ -11,6 +11,7 @@
 		C900B221243EAD4E00D14F69 /* ReSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C900B220243EAD4E00D14F69 /* ReSwift */; };
 		C917CF34243EA15500C54CE2 /* TestServerModels in Frameworks */ = {isa = PBXBuildFile; productRef = C917CF33243EA15500C54CE2 /* TestServerModels */; };
 		C91A046E24C00BBF00DA5B9B /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A046D24C00BBF00DA5B9B /* Requests.swift */; };
+		C91A047024C12E0500DA5B9B /* API+Toasts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91A046F24C12E0500DA5B9B /* API+Toasts.swift */; };
 		C9310EB124AAC49F005B5E80 /* JSONAPICombine in Frameworks */ = {isa = PBXBuildFile; productRef = C9310EB024AAC49F005B5E80 /* JSONAPICombine */; };
 		C939EE50248DBC7400873D8F /* NewTestCreateSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */; };
 		C939EE52248DFC7200873D8F /* NewTestSelectSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		C900B21D243EA5C600D14F69 /* ObservableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableState.swift; sourceTree = "<group>"; };
 		C91A046D24C00BBF00DA5B9B /* Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
+		C91A046F24C12E0500DA5B9B /* API+Toasts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "API+Toasts.swift"; sourceTree = "<group>"; };
 		C939EE4F248DBC7400873D8F /* NewTestCreateSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestCreateSourceView.swift; sourceTree = "<group>"; };
 		C939EE51248DFC7200873D8F /* NewTestSelectSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTestSelectSourceView.swift; sourceTree = "<group>"; };
 		C9409AE8244105B1008945FB /* APITestWatcherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITestWatcherController.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 			children = (
 				C995F6BC24AA706E00015270 /* Combine+ReSwift.swift */,
 				C91A046D24C00BBF00DA5B9B /* Requests.swift */,
+				C91A046F24C12E0500DA5B9B /* API+Toasts.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				C939EE50248DBC7400873D8F /* NewTestCreateSourceView.swift in Sources */,
 				C96A3D2024510F3E00DC3D65 /* Config.swift in Sources */,
 				C9F6CB7C244C299D00945FBF /* ToastMiddlewareController.swift in Sources */,
+				C91A047024C12E0500DA5B9B /* API+Toasts.swift in Sources */,
 				C99F921F2442F851000DD436 /* TestDetailView.swift in Sources */,
 				C99F92232443D159000DD436 /* ToolbarView.swift in Sources */,
 			);

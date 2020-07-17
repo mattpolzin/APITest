@@ -10,25 +10,9 @@ import Foundation
 import ReSwift
 import APIModels
 import Combine
-import JSONAPI
-import JSONAPIResourceCache
 import JSONAPICombine
-import CombineAPIRequest
-import CombineReSwift
 
 final class APIMiddlewareController {
-
-    static let decoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return decoder
-    }()
-
-    static let encoder: JSONEncoder = {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        return encoder
-    }()
 
     let testWatchController: APITestWatcherController = APITestWatcherController()
 
@@ -125,17 +109,6 @@ final class APIMiddlewareController {
 
 extension APIMiddlewareController {
 
-    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
-        return try decoder.decode(type, from: data)
-    }
-
-    static func encode<T: Encodable>(_ value: T) throws -> Data {
-        return try encoder.encode(value)
-    }
-}
-
-extension APIMiddlewareController {
-
     /// Performs some published task that results in
     /// Actions and subscribes the Store to that
     /// publisher.
@@ -150,38 +123,5 @@ extension APIMiddlewareController {
             .mapError { $0 as? ResponseFailure ?? .unknown(String(describing: $0)) }
         }
         .subscribe(store)
-    }
-}
-
-func toast(given condition: @autoclosure () -> Bool, message: String) -> Toast? {
-    guard condition() else { return nil }
-
-    return Toast.apiError(message: message)
-}
-
-func anyRequestFailureToast(message: String) -> (Error) -> ReSwift.Action? {
-    return { error in
-        toast(
-            given: error is RequestFailure,
-            message: message
-        )
-    }
-}
-
-func missingPrimaryResourceToast(message: String) -> (Error) -> ReSwift.Action? {
-    return { error in
-        toast(
-            given: (error as? ResponseFailure)?.isMissingPrimaryResource ?? false,
-            message: message
-        )
-    }
-}
-
-func responseDecodingErrorToast(message: String) -> (Error) -> ReSwift.Action? {
-    return { error in
-        toast(
-            given: (error as? ResponseFailure)?.isResponseDecoding ?? false,
-            message: message
-        )
     }
 }

@@ -13,6 +13,18 @@ import JSONAPICombine
 import Combine
 import ReSwift
 
+fileprivate let decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+}()
+
+fileprivate let encoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+}()
+
 extension API {
     enum Publish {
         typealias Action = AnyPublisher<ReSwift.Action, Error>
@@ -25,7 +37,7 @@ extension API {
             guard let uri = uri else {
                 return try API.Request
                 .newProperties(host: host, source: nil, apiHostOverride: apiHostOverride)
-                .publisher(using: APIMiddlewareController.decoder)
+                .publisher(using: decoder)
                 .primaryAndEntities
                 .dispatch(
                     \.cacheAction,
@@ -41,11 +53,11 @@ extension API {
 
             return try API.Request
             .newSource(host: host, uri: uri)
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .primaryAndEntities
             .chain(
                 try! API.Request.newProperties(host: host, apiHostOverride: apiHostOverride),
-                using: APIMiddlewareController.decoder
+                using: decoder
             )
             .primaryAndEntities
             .dispatch(
@@ -66,7 +78,7 @@ extension API {
         ) throws -> Action {
             try API.Request
             .newTest(host: host, propertiesId: propertiesId)
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .entities
             .cache()
             .dispatchError(
@@ -80,7 +92,7 @@ extension API {
         static func allTests(host: URL) throws -> Action {
             try API.Request
             .allTests(host: host)
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .entities
             .cache()
             .dispatchError(
@@ -104,7 +116,7 @@ extension API {
                 includingMessages: includeMessages,
                 includingProperties: includeProperties
             )
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .entities
             .cache()
             .dispatchError(
@@ -138,7 +150,7 @@ extension API {
         static func allSources(host: URL) throws -> Action {
             try API.Request
             .allSources(host: host)
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .entities
             .cache()
             .dispatchError(
@@ -153,7 +165,7 @@ extension API {
         static func allProperties(host: URL) throws -> Action {
             try API.Request
             .allProperties(host: host)
-            .publisher(using: APIMiddlewareController.decoder)
+            .publisher(using: decoder)
             .entities
             .cache()
             .dispatchError(
@@ -174,7 +186,7 @@ extension API {
                 host: host,
                 path: "/openapi_sources",
                 body: document,
-                encode: APIMiddlewareController.encoder.encode
+                encode: encoder.encode
             )
         }
 
@@ -190,7 +202,7 @@ extension API {
                 host: host,
                 path: "/api_test_properties",
                 body: document,
-                encode: APIMiddlewareController.encoder.encode
+                encode: encoder.encode
             )
         }
 
@@ -203,7 +215,7 @@ extension API {
                 host: host,
                 path: "/api_test_properties",
                 body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
-                encode: APIMiddlewareController.encoder.encode
+                encode: encoder.encode
             )
         }
 
@@ -228,7 +240,7 @@ extension API {
                 host: host,
                 path: "/api_tests",
                 body: document,
-                encode: APIMiddlewareController.encoder.encode
+                encode: encoder.encode
             )
         }
 
