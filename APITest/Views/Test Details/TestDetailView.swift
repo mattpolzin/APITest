@@ -156,6 +156,8 @@ struct TestDetailView: View {
                                     context: message.context,
                                     highlighted: message.highlighted
                                 )
+                                .background(Color(.systemBackground))
+                                .onTapGesture {} // fixes scrolling for iOS
                                 .onLongPressGesture {
                                     store.dispatch(TestDetails.longPressMessage(message.id))
                                 }

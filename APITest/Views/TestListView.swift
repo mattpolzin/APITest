@@ -59,17 +59,17 @@ struct TestListView: View {
                         .background(test.status.color)
                         .cornerRadius(10)
                 }.padding(.init(top: 5, leading: 10, bottom: 5, trailing: 10))
-                    .listRowInsets(
-                        .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+                .listRowInsets(
+                    .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+                ).background(
+                    self.selectedTestId == test.id
+                        ? Color.accentColor
+                        : Color(.systemBackground)
                 ).onTapGesture {
                     store.dispatch(API.GetTest.requestDescriptor(id: test.id, includeMessages: true, includeProperties: (true, alsoIncludeSource: true)))
                     store.dispatch(API.GetTest.requestRawLogs(id: test.id))
                     store.dispatch(test.select)
-                }.background(
-                    self.selectedTestId == test.id
-                        ? Color.accentColor
-                        : Color.clear
-                )
+                }
             }
         }
     }

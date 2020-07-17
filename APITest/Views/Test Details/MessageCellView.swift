@@ -18,14 +18,17 @@ struct MessageCellView: View {
     let highlighted: Bool
 
     var body: some View {
-        HStack {
-            Rectangle().fill(messageType.color)
-                .frame(width: 5)
-            VStack(alignment: .leading, spacing: 10) {
-                Text(message).font(.body).bold()
-                path.map { Text("→ \($0)").font(.body).italic() }
-                context.map { Text("→ \($0)").font(.body) }
+        Group {
+            HStack {
+                Rectangle().fill(messageType.color)
+                    .frame(width: 5)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(message).font(.body).bold()
+                    path.map { Text("→ \($0)").font(.body).italic() }
+                    context.map { Text("→ \($0)").font(.body) }
+                }
             }
+            .padding(.init(top: 10, leading: 10, bottom: 10, trailing: 10))
         }
         .background(
             Group {
@@ -34,7 +37,7 @@ struct MessageCellView: View {
             .cornerRadius(3)
             .animation(.easeInOut(duration: highlighted ? 0.075 : 0.55))
         )
-        .listRowInsets(.init(top: 10, leading: 10, bottom: 10, trailing: 10))
+        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
 
     /// A dummy cell that uses morse code as placeholder for text.
