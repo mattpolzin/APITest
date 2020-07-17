@@ -16,6 +16,9 @@ struct AppState: Equatable, ReSwift.StateType {
     var host: URL
 
     var selectedTestId: API.APITestDescriptor.Id?
+    /// A "flashed" message is one that is temporarily
+    /// highlighted for some reason.
+    var highlightedMessages: Set<API.APITestMessage.Id>
 
     var detailsViewing: TestDetailsHeaderView.Viewing
 
@@ -37,6 +40,7 @@ struct AppState: Equatable, ReSwift.StateType {
         toastQueue = []
         recentlyUsedProperties = nil
         selectedTestId = nil
+        highlightedMessages = Set()
         detailsViewing = .messages
     }
 }
@@ -220,12 +224,19 @@ extension AppState {
         case .close as Help:
             state.takeover = .none
             return state
-        case .detailsLogsOrMessages as Toggle:
+        case .toggleDetailsLogsOrMessages as TestDetails:
             switch state.detailsViewing {
             case .logs:
                 state.detailsViewing = .messages
             case .messages:
                 state.detailsViewing = .logs
+            }
+            return state
+        case .highlightMessage(let messageId, turnedOn: let on) as TestDetails:
+            if on {
+                state.highlightedMessages.insert(messageId)
+            } else {
+                state.highlightedMessages.remove(messageId)
             }
             return state
         case .show(let content) as Toast:

@@ -29,7 +29,13 @@ enum NewTest: ReSwift.Action {
 
 enum Toggle: ReSwift.Action {
     case field(WritableKeyPath<AppState.Toggles, Bool>)
-    case detailsLogsOrMessages
+
+}
+
+enum TestDetails: ReSwift.Action {
+    case toggleDetailsLogsOrMessages
+    case longPressMessage(API.APITestMessage.Id)
+    case highlightMessage(API.APITestMessage.Id, turnedOn: Bool)
 }
 
 enum Settings: ReSwift.Action {
@@ -60,6 +66,10 @@ enum Toast: ReSwift.Action {
 
     static func apiError(message: String) -> Self {
         .show(.init(title: "API Error", message: message, style: .error))
+    }
+
+    static func pasteboardError(message: String) -> Self {
+        .show(.init(title: "Copy Failed", message: message, style: .error))
     }
 
     struct Content: Equatable, Identifiable {

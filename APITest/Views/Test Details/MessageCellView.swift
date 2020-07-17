@@ -15,6 +15,7 @@ struct MessageCellView: View {
     let message: String
     let path: String?
     let context: String?
+    let highlighted: Bool
 
     var body: some View {
         HStack {
@@ -25,7 +26,15 @@ struct MessageCellView: View {
                 path.map { Text("→ \($0)").font(.body).italic() }
                 context.map { Text("→ \($0)").font(.body) }
             }
-        }.listRowInsets(.init(top: 10, leading: 10, bottom: 10, trailing: 10))
+        }
+        .background(
+            Group {
+                highlighted ? Color.accentColor : Color.clear
+            }
+            .cornerRadius(3)
+            .animation(.easeInOut(duration: highlighted ? 0.075 : 0.55))
+        )
+        .listRowInsets(.init(top: 10, leading: 10, bottom: 10, trailing: 10))
     }
 
     /// A dummy cell that uses morse code as placeholder for text.
@@ -34,7 +43,8 @@ struct MessageCellView: View {
             messageType: .info,
             message: .randomMorse(count: 25),
             path: .randomMorse(count: 8, asPath: true),
-            context: .randomMorse(count: 15)
+            context: .randomMorse(count: 15),
+            highlighted: false
         )
     }
 }

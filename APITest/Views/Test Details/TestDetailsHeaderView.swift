@@ -62,7 +62,7 @@ struct RawLogButton: View {
 
     var body: some View {
         Button(
-            action: { store.dispatch(Toggle.detailsLogsOrMessages) },
+            action: { store.dispatch(TestDetails.toggleDetailsLogsOrMessages) },
             label: {
                 Group {
                     if viewing == .messages {

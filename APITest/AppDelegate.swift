@@ -15,6 +15,7 @@ let store = ReSwift.Store<AppState>(
     state: AppState(),
     middleware: [
         APIMiddlewareController().middleware,
+        OSSideEffectMiddlewareController().middleware,
         ToastMiddlewareController().middleware
     ]
 )

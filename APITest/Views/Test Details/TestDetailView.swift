@@ -11,7 +11,7 @@ import ReSwift
 import APIModels
 import JSONAPI
 
-extension API.APITestMessage {
+extension TestDetailView.MessageModel {
     public static let createdAtOrdering: (Self, Self) -> Bool = { left, right in
         return left.createdAt < right.createdAt
     }
@@ -27,7 +27,7 @@ struct TestDetailView: View {
             let test: API.APITestDescriptor
             let source: API.OpenAPISource
             let hostOverride: URL?
-            let messages: [API.APITestMessage]
+            let messages: [MessageModel]
             let logs: String?
             let viewing: TestDetailsHeaderView.Viewing
         }
@@ -39,7 +39,7 @@ struct TestDetailView: View {
             return state
         }
 
-        var messages: [API.APITestMessage] {
+        var messages: [MessageModel] {
             guard let values = populatedValues else {
                 return []
             }
@@ -61,6 +61,16 @@ struct TestDetailView: View {
         }
     }
 
+    struct MessageModel: Equatable, Identifiable {
+        let id: API.APITestMessage.Id
+        let createdAt: Date
+        let messageType: API.MessageType
+        let message: String
+        let path: String?
+        let context: String?
+        let highlighted: Bool
+    }
+
     let state: State
     let messageTypeFilters: AppState.Toggles.Messages
     let filterText: String
@@ -78,7 +88,7 @@ struct TestDetailView: View {
     }
 
     /// Apply only the text filter.
-    func textFilter(_ message: API.APITestMessage) -> Bool {
+    func textFilter(_ message: MessageModel) -> Bool {
         return filterText.isEmpty
             || message.message.contains(filterText)
             || (message.context?.contains(filterText) ?? false)
@@ -86,7 +96,7 @@ struct TestDetailView: View {
     }
 
     /// Apply both the message type and text filters.
-    func messageFilter(_ message: API.APITestMessage) -> Bool {
+    func messageFilter(_ message: MessageModel) -> Bool {
         let allowedMessageTypes: [API.MessageType] = [
             .debug,
             .info,
@@ -100,10 +110,10 @@ struct TestDetailView: View {
     }
 
     /// Apply the message filter and sort by newest
-    func sortedAndFiltered(_ messages: [API.APITestMessage]) -> [API.APITestMessage] {
+    func sortedAndFiltered(_ messages: [MessageModel]) -> [MessageModel] {
         messages.lazy
             .filter(self.messageFilter)
-            .sorted(by: API.APITestMessage.createdAtOrdering)
+            .sorted(by: MessageModel.createdAtOrdering)
     }
 
     let dateFormatter: DateFormatter = {
@@ -143,8 +153,12 @@ struct TestDetailView: View {
                                     messageType: message.messageType,
                                     message: message.message,
                                     path: message.path,
-                                    context: message.context
+                                    context: message.context,
+                                    highlighted: message.highlighted
                                 )
+                                .onLongPressGesture {
+                                    store.dispatch(TestDetails.longPressMessage(message.id))
+                                }
                             }
                         }
                     }
@@ -172,7 +186,8 @@ extension TestDetailView {
         in entities: EntityCache,
         withMessageTypeFilters messageTypeFilters: AppState.Toggles.Messages,
         filterText: String,
-        viewing: TestDetailsHeaderView.Viewing
+        viewing: TestDetailsHeaderView.Viewing,
+        highlighting highlightedMessages: Set<API.APITestMessage.Id>
     ) {
         self.messageTypeFilters = messageTypeFilters
         self.filterText = filterText
@@ -193,7 +208,17 @@ extension TestDetailView {
                 test: test,
                 source: source,
                 hostOverride: properties.apiHostOverride,
-                messages: messages,
+                messages: messages.map { message in
+                    MessageModel(
+                        id: message.id,
+                        createdAt: message.createdAt,
+                        messageType: message.messageType,
+                        message: message.message,
+                        path: message.path,
+                        context: message.context,
+                        highlighted: highlightedMessages.contains(message.id)
+                    )
+                },
                 logs: logs,
                 viewing: viewing
             )

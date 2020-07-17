@@ -97,7 +97,8 @@ struct ContentView: View {
                         in: state.entities,
                         withMessageTypeFilters: state.toggles.messages,
                         filterText: state.filterText,
-                        viewing: state.detailsViewing
+                        viewing: state.detailsViewing,
+                        highlighting: state.highlightedMessages
                     ).frame(maxWidth: .infinity)
                 }
             } else {
@@ -111,7 +112,8 @@ struct ContentView: View {
                         in: state.entities,
                         withMessageTypeFilters: state.toggles.messages,
                         filterText: state.filterText,
-                        viewing: state.detailsViewing
+                        viewing: state.detailsViewing,
+                        highlighting: state.highlightedMessages
                     ).frame(maxWidth: .infinity)
                 }
             }
