@@ -256,17 +256,25 @@
 		C99F921D2442F842000DD436 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C9A2C38C24CE21D800D8CAC5 /* Auxiliary */,
 				C939EE4E248DBB5B00873D8F /* New Test */,
 				C9AB41942454DC0B00B50FA4 /* Test Details */,
 				C9CD2C0D2445947F001A3091 /* Components */,
 				C966241E243E28E5005D08F4 /* ContentView.swift */,
 				C99F92202443CE54000DD436 /* TestListView.swift */,
 				C99F92222443D159000DD436 /* ToolbarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C9A2C38C24CE21D800D8CAC5 /* Auxiliary */ = {
+			isa = PBXGroup;
+			children = (
 				C9F6CB7124483D6500945FBF /* SettingsView.swift */,
 				C9F6CB79244C203900945FBF /* ToastView.swift */,
 				C9D8C42324517CEE000EEC13 /* HelpView.swift */,
 			);
-			path = Views;
+			path = Auxiliary;
 			sourceTree = "<group>";
 		};
 		C9AB41942454DC0B00B50FA4 /* Test Details */ = {
@@ -366,7 +374,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1140;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Mathew Polzin";
 				TargetAttributes = {
 					C9662416243E28E5005D08F4 = {
@@ -515,6 +523,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -576,6 +585,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -743,7 +753,7 @@
 			repositoryURL = "git@github.com:mattpolzin/jsonapi-openapi-test-server.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.3.0;
+				minimumVersion = 0.11.0;
 			};
 		};
 		C9310EAF24AAC49E005B5E80 /* XCRemoteSwiftPackageReference "JSONAPI-Combine" */ = {

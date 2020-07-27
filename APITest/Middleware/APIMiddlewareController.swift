@@ -36,12 +36,13 @@ final class APIMiddlewareController {
                         propertiesId = nil
                     case .existing(id: let id):
                         propertiesId = id
-                    case .new(uri: let uri, apiHostOverride: let apiHostOverride):
+                    case .new(uri: let uri, apiHostOverride: let apiHostOverride, parser: let parser):
                         self.perform {
                             try API.Publish.newSource(
                                 host: state.host,
                                 uri: uri,
-                                apiHostOverride: apiHostOverride
+                                apiHostOverride: apiHostOverride,
+                                parser: parser
                             )
                         }
                         return

@@ -37,13 +37,23 @@ struct NewTestModalView: View {
         let existingOptions: [RequestProperties] = entityCache.testProperties.values
             .compactMap { properties in (properties ~> \.openAPISource).materialized(from: entityCache).map { (properties, $0) } }
             .map { (properties, source) in
-                .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
+                .existing(
+                    properties.id,
+                    sourceUri: source.uri,
+                    apiHostOverride: properties.apiHostOverride?.absoluteString,
+                    parser: properties.parser
+                )
         }
 
         let selectedProperties: RequestProperties? = selection.flatMap { $0.materialized(from: entityCache) }
             .flatMap { properties in (properties ~> \.openAPISource).materialized(from: entityCache).map { (properties, $0) } }
             .map { (properties, source) in
-                .existing(properties.id, sourceUri: source.uri, apiHostOverride: properties.apiHostOverride?.absoluteString)
+                .existing(
+                    properties.id,
+                    sourceUri: source.uri,
+                    apiHostOverride: properties.apiHostOverride?.absoluteString,
+                    parser: properties.parser
+                )
         }
 
         self.init(
@@ -70,7 +80,8 @@ struct NewTestModalView: View {
                     testState.newSourceState.map { newSourceState in
                         NewTestCreateSourceView(
                             openAPISourceUri: newSourceState.openAPISourceUri,
-                            serverHostOverride: newSourceState.serverHostOverride.flatMap(URL.init(string:))
+                            serverHostOverride: newSourceState.serverHostOverride.flatMap(URL.init(string:)),
+                            parser: newSourceState.parser
                         )
                             .frame(width: self.size.width, height: self.size.height)
                             .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
@@ -91,7 +102,7 @@ extension NewTestModalView {
     enum RequestProperties: Equatable, Swift.Identifiable, CustomStringConvertible {
         case `default`
         case new
-        case existing(API.APITestProperties.Id, sourceUri: String, apiHostOverride: String?)
+        case existing(API.APITestProperties.Id, sourceUri: String, apiHostOverride: String?, parser: API.Parser)
 
         var description: String {
             switch self {
@@ -99,8 +110,8 @@ extension NewTestModalView {
                 return "default configuration"
             case .new:
                 return "new configuration"
-            case .existing(_, let sourceUri, let hostOverride):
-                return "\(sourceUri)" + (hostOverride.map { " (server: \($0))" } ?? "")
+            case .existing(_, let sourceUri, let hostOverride, let parser):
+                return "\(sourceUri)" + (hostOverride.map { " (server: \($0))" } ?? "") + (parser == .fast ? "[fast parser]" : "")
             }
         }
 
@@ -110,7 +121,7 @@ extension NewTestModalView {
                 return "default"
             case .new:
                 return "new"
-            case .existing(let id, _, _):
+            case .existing(let id, _, _, _):
                 return id.rawValue.uuidString
             }
         }
@@ -119,8 +130,15 @@ extension NewTestModalView {
             switch self {
             case .default, .new:
                 return [ Text(description).bold() ]
-            case .existing(_, let sourceUri, let hostOverride):
-                return [ Text(sourceUri).italic() ] + (hostOverride.map { [ Text(" ("), Text("server: ").bold(), Text($0).italic(), Text(")").bold() ] } ?? [])
+            case .existing(_, let sourceUri, let hostOverride, let parser):
+                return [ Text(sourceUri).italic() ]
+                    + [
+                        [ Text(" ("),
+                        Text("server: ").bold(),
+                        Text(hostOverride.map { $0 } ?? "default").italic() ],
+                        parser == .fast ? [ Text(", "), Text("parser: ").bold(), Text("fast").italic() ] : [],
+                        [ Text(")").bold() ]
+                    ].flatMap { $0 }
             }
         }
 
@@ -130,7 +148,7 @@ extension NewTestModalView {
                 return [API.StartTest.request(.default), NewTest.dismiss]
             case .new:
                 return [NewTest.newSource]
-            case .existing(let id, _, _):
+            case .existing(let id, _, _, _):
                 return [API.StartTest.request(.existing(id: id)), NewTest.dismiss]
             }
         }

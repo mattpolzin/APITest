@@ -15,6 +15,7 @@ struct NewTestCreateSourceView: View {
 
     let openAPISourceUri: String?
     let serverHostOverride: URL?
+    let parser: API.Parser
 
     var openAPISource: Binding<String> {
         Binding(
@@ -42,12 +43,28 @@ struct NewTestCreateSourceView: View {
         )
     }
 
+    var fastParser: Binding<Bool> {
+        Binding(
+            get: { self.parser == .fast },
+            set: { fast in
+                store.dispatch(NewTest.changeParser(fast ? .fast : .stable))
+            }
+        )
+    }
+
     var body: some View {
         VStack {
             Text("New Test").font(.title)
             Spacer()
-            TextField(title: "OpenAPI Source (leave blank for default)", value: self.openAPISource, isValid: true) // TODO: invalidate for bad values
-            TextField(title: "API Server Override (leave blank to use documented source)", value: self.serverHost, isValid: true) // TODO: invalidate for bad values
+            VStack(alignment: .leading, spacing: 0) {
+                Text("OpenAPI Source:").padding(.bottom, 4)
+                TextField(title: "(leave blank for default)", value: self.openAPISource, isValid: true) // TODO: invalidate for bad values
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                Text("API Server Override:").padding(.bottom, 4)
+                TextField(title: "(leave blank to use documented source)", value: self.serverHost, isValid: true) // TODO: invalidate for bad values
+            }
+            SwiftUI.Toggle(isOn: self.fastParser) { Text("Use Fast Parser") }
             Spacer()
             HStack {
                 StandardButton(
@@ -57,7 +74,15 @@ struct NewTestCreateSourceView: View {
 
                 StandardButton(
                     action: {
-                        store.dispatch(API.StartTest.request(.new(uri: self.openAPISourceUri, apiHostOverride: self.serverHostOverride)))
+                        store.dispatch(
+                            API.StartTest.request(
+                                .new(
+                                    uri: self.openAPISourceUri,
+                                    apiHostOverride: self.serverHostOverride,
+                                    parser: self.parser
+                                )
+                            )
+                        )
                         store.dispatch(NewTest.dismiss)
                 },
                     label: "Start"

@@ -20,7 +20,7 @@ extension API {
 
         enum RequestSource: Equatable {
             case `default`
-            case new(uri: String?, apiHostOverride: URL?)
+            case new(uri: String?, apiHostOverride: URL?, parser: API.Parser)
             case existing(id: API.APITestProperties.Id)
         }
     }

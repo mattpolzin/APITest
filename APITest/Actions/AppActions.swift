@@ -24,6 +24,7 @@ enum NewTest: ReSwift.Action {
     case newSource
     case changeSourceUri(String?)
     case changeServerOverride(String?)
+    case changeParser(API.Parser)
     case cancelNewSource
 }
 

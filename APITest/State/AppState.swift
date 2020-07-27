@@ -149,12 +149,18 @@ extension AppState.Modal {
             @Validated<OptionalURLStringValidator>
             var serverHostOverride: String?
 
+            var parser: API.Parser
+
             func with(source: String?) -> Self {
-                return .init(openAPISourceUri: source, serverHostOverride: self.serverHostOverride)
+                return .init(openAPISourceUri: source, serverHostOverride: serverHostOverride, parser: parser)
             }
 
             func with(serverHostOverride: String?) -> Self {
-                return .init(openAPISourceUri: self.openAPISourceUri, serverHostOverride: serverHostOverride)
+                return .init(openAPISourceUri: openAPISourceUri, serverHostOverride: serverHostOverride, parser: parser)
+            }
+
+            func with(parser: API.Parser) -> Self {
+                return .init(openAPISourceUri: openAPISourceUri, serverHostOverride: serverHostOverride, parser: parser)
             }
         }
 
@@ -189,7 +195,7 @@ extension AppState {
             state.takeover = .none
             return state
         case .newSource as NewTest:
-            state.takeover = .modal(.newTest(.newSource(.init(openAPISourceUri: nil, serverHostOverride: nil))))
+            state.takeover = .modal(.newTest(.newSource(.init(openAPISourceUri: nil, serverHostOverride: nil, parser: .stable))))
             return state
         case .cancelNewSource as NewTest:
             state.takeover = .modal(.newTest(.selectSource))
@@ -207,6 +213,13 @@ extension AppState {
                 return state
             }
             state.takeover = .modal(.newTest(.newSource(currentSource.with(serverHostOverride: server))))
+            return state
+        case .changeParser(let parser) as NewTest:
+            guard let currentSource = state.takeover.modal?.newTestState?.newSourceState else {
+                // invariant failure?
+                return state
+            }
+            state.takeover = .modal(.newTest(.newSource(currentSource.with(parser: parser))))
             return state
         case .toggleOpen as Settings:
             if let editor = state.takeover.settingsEditor {

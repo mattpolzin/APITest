@@ -32,11 +32,12 @@ extension API {
         static func newSource(
             host: URL,
             uri: String?,
-            apiHostOverride: URL?
+            apiHostOverride: URL?,
+            parser: API.Parser
         ) throws -> Action {
             guard let uri = uri else {
                 return try API.Request
-                .newProperties(host: host, source: nil, apiHostOverride: apiHostOverride)
+                .newProperties(host: host, source: nil, apiHostOverride: apiHostOverride, parser: parser)
                 .publisher(using: decoder)
                 .primaryAndEntities
                 .dispatch(
@@ -56,7 +57,7 @@ extension API {
             .publisher(using: decoder)
             .primaryAndEntities
             .chain(
-                try! API.Request.newProperties(host: host, apiHostOverride: apiHostOverride),
+                try! API.Request.newProperties(host: host, apiHostOverride: apiHostOverride, parser: parser),
                 using: decoder
             )
             .primaryAndEntities
@@ -193,9 +194,10 @@ extension API {
         static func newProperties(
             host: URL,
             source: SingleEntityResultPair<API.OpenAPISource>?,
-            apiHostOverride: URL?
+            apiHostOverride: URL?,
+            parser: API.Parser
         ) throws -> APIRequest<API.CreateAPITestPropertiesDocument, API.SingleAPITestPropertiesDocument> {
-            let document = try API.newPropertiesDocument(from: source, apiHostOverride: apiHostOverride)
+            let document = try API.newPropertiesDocument(from: source, apiHostOverride: apiHostOverride, parser: parser)
 
             return try APIRequest(
                 .post,
@@ -208,13 +210,14 @@ extension API {
 
         static func newProperties(
             host: URL,
-            apiHostOverride: URL?
+            apiHostOverride: URL?,
+            parser: API.Parser
         ) throws -> PartialAPIRequest<SingleEntityResultPair<API.OpenAPISource>?, API.CreateAPITestPropertiesDocument, API.SingleAPITestPropertiesDocument> {
             try PartialAPIRequest(
                 .post,
                 host: host,
                 path: "/api_test_properties",
-                body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride) },
+                body: { try API.newPropertiesDocument(from: $0, apiHostOverride: apiHostOverride, parser: parser) },
                 encode: encoder.encode
             )
         }
@@ -309,9 +312,9 @@ extension API {
     /// In both cases `nil` is allowed. A `nil` override is
     /// "don't override" and a `nil` source document means the default source
     /// for the server if one is defined.
-    static func newPropertiesDocument(from source: SingleEntityResultPair<API.OpenAPISource>?, apiHostOverride: URL?) throws -> API.CreateAPITestPropertiesDocument {
+    static func newPropertiesDocument(from source: SingleEntityResultPair<API.OpenAPISource>?, apiHostOverride: URL?, parser: API.Parser) throws -> API.CreateAPITestPropertiesDocument {
         let properties = API.NewAPITestProperties(
-            attributes: .init(apiHostOverride: apiHostOverride),
+            attributes: .init(apiHostOverride: apiHostOverride, parser: parser),
             relationships: .init(openAPISource: source.map { .init(resourceObject: $0.primaryResource) }),
             meta: .none,
             links: .none

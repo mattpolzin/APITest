@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/vapor/console-kit.git",
         "state": {
           "branch": null,
-          "revision": "9b5842b47be1a3164a42811613dce09bf5bf1f91",
-          "version": "4.1.3"
+          "revision": "7cf8185ad62d50ae9777ce78bcfde8f5c9f900e2",
+          "version": "4.2.1"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/vapor/fluent-kit.git",
         "state": {
           "branch": null,
-          "revision": "ad5eef38c5168fdb4b77d5a73794a90e0ce3b9a5",
-          "version": "1.0.2"
+          "revision": "62767117c269a50f35934d7af674da79aa154846",
+          "version": "1.5.2"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/vapor/fluent-postgres-driver",
         "state": {
           "branch": null,
-          "revision": "cf8ec53b87606dc799a07a0754a297b32cf9f592",
-          "version": "2.0.0"
+          "revision": "f310f8843fafa3134cf89d81b8b3480f16967f37",
+          "version": "2.1.0"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/mattpolzin/JSONAPI-OpenAPI",
         "state": {
           "branch": null,
-          "revision": "56a94a69ab8b7fb3f6134b35b08ca64139614f4c",
-          "version": "0.19.0"
+          "revision": "715ac5721c03b0f44084c493b652c5c0f03e5428",
+          "version": "0.23.1"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "git@github.com:mattpolzin/jsonapi-openapi-test-server.git",
         "state": {
           "branch": null,
-          "revision": "0e26d994dd5144cf0afe18244bfadd1343cae650",
-          "version": "0.3.2"
+          "revision": "1da1a8bdde4e5f129d1b49c8bef65815d95d371e",
+          "version": "0.11.0"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/mattpolzin/OpenAPIKit",
         "state": {
           "branch": null,
-          "revision": "201586db9dcce99d148eed12cc556a0c86c3355e",
-          "version": "1.4.0"
+          "revision": "31daf628295db4038b314855d71e0a15ef23b5ab",
+          "version": "1.4.3"
         }
       },
       {
@@ -168,8 +168,53 @@
         "repositoryURL": "https://github.com/vapor/postgres-nio.git",
         "state": {
           "branch": null,
-          "revision": "25aa31fdd55ea119edee270ce4bd7bd4bd59fdf7",
-          "version": "1.1.0"
+          "revision": "ffa8b35d239e17074bb60c5b00ca62b0ec428d01",
+          "version": "1.2.1"
+        }
+      },
+      {
+        "package": "pure-swift-json",
+        "repositoryURL": "https://github.com/fabianfett/pure-swift-json",
+        "state": {
+          "branch": null,
+          "revision": "5dc8ec1d857f3b56e3a718a01165ae80c7677d48",
+          "version": "0.4.0"
+        }
+      },
+      {
+        "package": "queues",
+        "repositoryURL": "https://github.com/vapor/queues.git",
+        "state": {
+          "branch": null,
+          "revision": "facd81e373b44d2b41ea85e0e46b439c36190f8c",
+          "version": "1.3.2"
+        }
+      },
+      {
+        "package": "queues-redis-driver",
+        "repositoryURL": "https://github.com/vapor/queues-redis-driver",
+        "state": {
+          "branch": null,
+          "revision": "2212b5daf46a35de6da1ea91af2e0cc927247ccb",
+          "version": "1.0.0-rc.3"
+        }
+      },
+      {
+        "package": "redis-kit",
+        "repositoryURL": "https://github.com/vapor/redis-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "9ef8f9dc472d022c4e94e5388ccf3c87ad83e2cb",
+          "version": "1.0.0-beta.5"
+        }
+      },
+      {
+        "package": "RediStack",
+        "repositoryURL": "https://gitlab.com/mordil/RediStack.git",
+        "state": {
+          "branch": null,
+          "revision": "8b75ef7f0e3cb82c69f2e2b47ea8f49e7d4e2ca9",
+          "version": "1.0.0-alpha.10"
         }
       },
       {
@@ -195,8 +240,8 @@
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
           "branch": null,
-          "revision": "e7f2d5bd36dc65a9edb303541cb678515a7fece3",
-          "version": "4.1.0"
+          "revision": "4cf052b78aebaf1b23f2264ce04d57b4b6eb5254",
+          "version": "4.2.0"
         }
       },
       {
@@ -213,13 +258,13 @@
         "repositoryURL": "https://github.com/vapor/sql-kit.git",
         "state": {
           "branch": null,
-          "revision": "8b82edd5d918068f204e3ac4206d5d15f6740395",
-          "version": "3.5.0"
+          "revision": "ea9928b7f4a801b175a00b982034d9c54ecb6167",
+          "version": "3.7.0"
         }
       },
       {
         "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
           "revision": "223d62adc52d51669ae2ee19bdb8b7d9fd6fcd9c",
@@ -258,8 +303,8 @@
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {
           "branch": null,
-          "revision": "74d7b91ceebc85daf387ebb206003f78813f71aa",
-          "version": "1.2.0"
+          "revision": "173f567a2dfec11d74588eea82cecea555bdc0bc",
+          "version": "1.4.0"
         }
       },
       {
@@ -330,8 +375,8 @@
         "repositoryURL": "https://github.com/vapor/vapor",
         "state": {
           "branch": null,
-          "revision": "dc2aa1e02e04a47b67cb0dabed628fe844900f30",
-          "version": "4.14.0"
+          "revision": "281b50935a7c3ac86916f69cb2851e55915ddf07",
+          "version": "4.27.1"
         }
       },
       {
@@ -357,8 +402,8 @@
         "repositoryURL": "git@github.com:vapor/websocket-kit.git",
         "state": {
           "branch": null,
-          "revision": "021edd1ca55451ad15b3e84da6b4064e4b877b34",
-          "version": "2.1.0"
+          "revision": "b0736014be634475dac4c23843811257d86dcdc1",
+          "version": "2.1.1"
         }
       },
       {
